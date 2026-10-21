@@ -41,6 +41,12 @@
   --font-ui: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-doc: "Literata", "Noto Serif", Georgia, serif;
   --font-code: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --side-bg: #1c1f4a;
+  --side-fg: #eceefb;
+  --side-muted: #a9aed6;
+  --side-hover: #2a2e63;
+  --side-active: #ffffff;
+  --side-active-fg: #1c1f4a;
   --radius: 8px;
   --side-w: 236px;
 }
@@ -68,6 +74,12 @@
     --warn: #f2c650;
     --warn-soft: #3a3013;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 6px 18px rgb(0 0 0 / 30%);
+    --side-bg: #0c0d16;
+    --side-fg: #e7e8f0;
+    --side-muted: #8f94b0;
+    --side-hover: #1b1d2c;
+    --side-active: #272a52;
+    --side-active-fg: #e7e8f0;
     color-scheme: dark;
   }
 }
@@ -94,6 +106,12 @@
   --warn: #f2c650;
   --warn-soft: #3a3013;
   --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 6px 18px rgb(0 0 0 / 30%);
+  --side-bg: #0c0d16;
+  --side-fg: #e7e8f0;
+  --side-muted: #8f94b0;
+  --side-hover: #1b1d2c;
+  --side-active: #272a52;
+  --side-active-fg: #e7e8f0;
   color-scheme: dark;
 }
 
@@ -142,36 +160,36 @@ button, input, select, textarea { font: inherit; color: inherit; }
   flex-direction: column;
   gap: 20px;
   padding: 20px 14px;
-  background: var(--surface);
-  border-right: 1px solid var(--line);
+  background: var(--side-bg);
+  color: var(--side-fg);
 }
-.brand { display: flex; gap: 10px; align-items: center; color: var(--fg); text-decoration: none; padding: 0 6px; }
+.brand { display: flex; gap: 10px; align-items: center; color: var(--side-fg); text-decoration: none; padding: 0 6px; }
 .brand-mark {
   display: grid; place-items: center;
   width: 34px; height: 34px; border-radius: 7px;
-  background: var(--ink); color: var(--ink-fg);
+  background: var(--side-active); color: var(--side-active-fg);
   font: 600 0.8125rem/1 var(--font-code); letter-spacing: 0.04em;
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
 .brand-text strong { font-size: 0.9375rem; }
-.brand-text small { color: var(--muted); font-size: 0.75rem; }
+.brand-text small { color: var(--side-muted); font-size: 0.75rem; }
 .nav { display: flex; flex-direction: column; gap: 2px; }
 .nav-item {
   display: flex; align-items: center; gap: 10px;
   padding: 9px 10px; border-radius: 7px;
-  color: var(--fg); text-decoration: none; font-weight: 500;
+  color: var(--side-fg); text-decoration: none; font-weight: 500;
 }
-.nav-item svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
-.nav-item:hover { background: var(--fill); }
-.nav-item.is-active { background: var(--ink-soft); color: var(--ink); }
-.nav-item.is-active svg { color: var(--ink); }
+.nav-item svg { width: 20px; height: 20px; flex: none; color: var(--side-muted); }
+.nav-item:hover { background: var(--side-hover); }
+.nav-item.is-active { background: var(--side-active); color: var(--side-active-fg); font-weight: 600; }
+.nav-item.is-active svg { color: var(--side-active-fg); }
 .nav-count {
   margin-left: auto; min-width: 22px; padding: 1px 7px; border-radius: 999px;
-  background: var(--fill); color: var(--muted);
+  background: var(--side-hover); color: var(--side-fg);
   font-size: 0.75rem; text-align: center; font-variant-numeric: tabular-nums;
 }
-.nav-item.is-active .nav-count { background: var(--surface); color: var(--ink); }
-.side-foot { margin-top: auto; padding: 0 6px; font-size: 0.75rem; color: var(--muted); }
+.nav-item.is-active .nav-count { background: var(--side-active-fg); color: var(--side-active); }
+.side-foot { margin-top: auto; padding: 0 6px; font-size: 0.75rem; color: var(--side-muted); }
 
 .work { min-width: 0; display: flex; flex-direction: column; }
 .top {
@@ -183,16 +201,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
   background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
-.top-date { color: var(--muted); font-size: 0.875rem; }
+.top-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.top-date { font-size: 0.875rem; font-weight: 600; }
+.demo-pill {
+  padding: 2px 10px; border-radius: 999px; background: var(--warn-soft); color: var(--warn);
+  font-size: 0.75rem; font-weight: 500; cursor: help;
+}
 .top-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 0.875rem; }
 .user { color: var(--muted); }
-.demo-note {
-  padding-block: 6px;
-  padding-left: max(24px, env(safe-area-inset-left, 0px));
-  padding-right: max(24px, env(safe-area-inset-right, 0px));
-  background: var(--warn-soft); color: var(--warn);
-  font-size: 0.8125rem;
-}
 .page {
   display: flex; flex-direction: column; gap: 20px;
   width: 100%; max-width: 1240px;
@@ -439,10 +455,27 @@ dialog::backdrop { background: rgb(10 10 20 / 45%); }
    Cột phải là tín hiệu hệ thống (bản tin đã gửi, việc cần xem, nguồn, chi phí AI). */
 .hn { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
 .hn-main { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.hn-head { display: flex; flex-direction: column; gap: 14px; }
 .hn-head h1 { font-size: 1.875rem; letter-spacing: -0.01em; }
-.hn-summary { margin-top: 6px; max-width: 62ch; font-size: 1.0625rem; color: var(--muted); }
-.hn-summary b { color: var(--fg); font-weight: 650; }
-.hn-summary b.hn-sum-urgent { color: var(--urgent); }
+[data-anchor] { scroll-margin-top: 76px; }
+
+/* Ba câu trả lời nhanh, bấm để tới phần chi tiết */
+.hn-jump {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden;
+}
+.hn-jump-item {
+  display: flex; align-items: center; gap: 14px; min-width: 0; padding: 14px 18px;
+  border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--fg);
+  font: inherit; text-align: left; cursor: pointer;
+}
+.hn-jump-item:first-child { border-left: 0; }
+.hn-jump-item:hover { background: var(--fill); }
+.hn-jump-item:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.hn-jump-n { font-size: 2rem; font-weight: 700; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.hn-jump-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.35; }
+.hn-jump-text b { font-weight: 600; }
+.hn-jump-text small { font-size: 0.8125rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .hn-meta { display: block; margin-top: 2px; font-size: 0.8125rem; color: var(--muted); }
 .hn-row-title { display: block; color: var(--fg); font-weight: 550; line-height: 1.45; text-decoration: none; }
@@ -488,9 +521,19 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
   background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
 .hn-lead:hover { border-color: color-mix(in srgb, var(--ink) 40%, var(--line)); }
-.hn-lead-eyebrow { display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--muted); }
-.hn-lead-eyebrow .st { margin-left: auto; }
-.hn-lead-title { font-size: 1.125rem; font-weight: 650; line-height: 1.35; text-wrap: balance; }
+.hn-lead-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.8125rem; color: var(--muted); }
+.hn-lead-rank { font-weight: 600; color: var(--fg); }
+.hn-lead-top .st { margin-left: auto; }
+.hn-han {
+  padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  background: var(--fill); color: var(--muted);
+}
+.hn-han-thuong { background: var(--ink-soft); color: var(--ink); }
+.hn-han-gap { background: var(--important-soft); color: var(--important); }
+.hn-han-nhe { background: var(--fill); color: var(--muted); }
+.hn-doc-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: 4px; font-size: 0.75rem; color: var(--muted); }
+.hn-doc-foot .hn-ok { margin-top: 0; }
+.hn-lead-title { font-size: 1.1875rem; font-weight: 650; line-height: 1.35; text-wrap: balance; }
 .hn-lead-title a { color: var(--fg); text-decoration: none; }
 .hn-lead-title a:hover { color: var(--ink); text-decoration: underline; }
 .hn-why { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; font-size: 0.875rem; }
@@ -502,7 +545,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
 .hn-facts > div { display: contents; }
 .hn-facts dt { color: var(--muted); }
 .hn-facts dd { margin: 0; font-weight: 500; }
-.hn-lead-actions { display: flex; gap: 8px; margin-top: auto; }
+.hn-lead-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: auto; }
 
 .hn-stream {
   padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap;
@@ -593,7 +636,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
   .nav-item { flex-direction: column; gap: 2px; padding: 6px 4px; font-size: 0.6875rem; position: relative; flex: 1; text-align: center; }
   .nav-count { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; padding: 0 5px; font-size: 0.625rem; }
   .page { padding-bottom: 96px; }
-  .top, .demo-note, .page {
+  .top, .page {
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
@@ -611,6 +654,10 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
 @media (max-width: 520px) {
   .user { display: none; }
   .hn-alert { grid-template-columns: minmax(0, 1fr); }
+  .demo-pill { display: none; }
+  .hn-jump-item { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px; }
+  .hn-jump-n { font-size: 1.5rem; }
+  .hn-jump-text small { display: none; }
   .hn-alert-badge { justify-self: start; }
   .hn-next-row { grid-template-columns: minmax(0, 1fr); }
   .hn-next-when { flex-direction: row; align-items: baseline; gap: 8px; white-space: normal; }
@@ -671,7 +718,10 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
   </aside>
   <div class="work">
     <header class="top">
-      <div class="top-date">Thứ Tư, 21/10/2026</div>
+      <div class="top-left">
+        <span class="top-date">Thứ Tư, 21/10/2026</span>
+        <span class="demo-pill" title="Dữ liệu minh họa, không phải văn bản hay bài viết thật. Ngày giả định: Thứ Tư 21/10/2026. Nút thao tác chỉ hiện thông báo, chưa ghi dữ liệu.">Bản mẫu giao diện · dữ liệu minh họa</span>
+      </div>
       <div class="top-actions">
         <button type="button" class="btn btn-ink" data-open="dlg-dan-link">+ Dán link</button>
         <label class="switch" for="vang-mat"><input type="checkbox" id="vang-mat" data-away> Vắng mặt</label>
@@ -679,7 +729,6 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
         <a href="#dang-nhap">Đăng xuất</a>
       </div>
     </header>
-    <p class="demo-note">Bản mẫu giao diện: dữ liệu minh họa, không phải văn bản hay bài viết thật. Ngày giả định: Thứ Tư 21/10/2026. Nút thao tác chỉ hiện thông báo, chưa ghi dữ liệu.</p>
     <main id="main" class="page">
 <section data-view="hom-nay" data-nav="hom_nay" data-title="Hôm nay · Thông tin pháp lý nóng">
 
@@ -689,9 +738,20 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
 
   <header class="hn-head">
     <h1>Hôm nay</h1>
-    <p class="hn-summary">
-      <b class="hn-sum-urgent">1 tin Khẩn</b> cần xem trước, <b>6 bài</b> nên viết, <b>2 văn bản mới</b> cần biết và <b>23 bài</b> mới của đối thủ trong 24 giờ.
-    </p>
+    <div class="hn-jump" role="group" aria-label="Tóm tắt sáng nay, bấm để tới phần chi tiết">
+      <button type="button" class="hn-jump-item" data-jump="viet">
+        <span class="hn-jump-n">6</span>
+        <span class="hn-jump-text"><b>bài nên viết</b><small>2 bài viết trước</small></span>
+      </button>
+      <button type="button" class="hn-jump-item" data-jump="moi">
+        <span class="hn-jump-n">2</span>
+        <span class="hn-jump-text"><b>văn bản mới</b><small>3 mốc trong 30 ngày</small></span>
+      </button>
+      <button type="button" class="hn-jump-item" data-jump="doi-thu">
+        <span class="hn-jump-n">23</span>
+        <span class="hn-jump-text"><b>bài đối thủ</b><small>nhiều nhất: chuyển nhượng, đặt cọc mua bán</small></span>
+      </button>
+    </div>
   </header>
 
   
@@ -708,7 +768,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
   </section>
   
 
-  <section class="hn-block" aria-labelledby="hn-viet--hom-nay">
+  <section class="hn-block" aria-labelledby="hn-viet--hom-nay" data-anchor="viet">
     <div class="hn-block-head">
       <h2 id="hn-viet--hom-nay">Nên viết hôm nay</h2>
       <a class="hn-link" href="#goi-y">Tất cả 6 gợi ý</a>
@@ -717,17 +777,18 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
     <div class="hn-leads">
       
       <article class="hn-lead">
-        <p class="hn-lead-eyebrow">
+        <p class="hn-lead-top">
           <span class="hn-stream hn-stream-pro">Chuyên môn</span>
-          <span>viết trước</span>
+          <span class="hn-lead-rank">Viết trước</span>
           <span class="st st-proposed" data-status-for="T-20261021-01">Đề xuất</span>
         </p>
         <h3 class="hn-lead-title"><a href="#goi-y.T-20261021-01">Từ 15/11/2026, thủ tục cấp sổ đỏ lần đầu thay đổi thế nào?</a></h3>
-        <ul class="hn-why">
+        <ul class="hn-why" aria-label="Vì sao nên viết hôm nay">
           <li>Hiệu lực 15/11/2026 (còn 25 ngày)</li><li>&quot;cấp sổ đỏ lần đầu&quot; tăng 35% trên Google Trends</li><li>4 báo, 2 đối thủ đã viết</li>
         </ul>
         <dl class="hn-facts">
-          <div><dt>Đăng</dt><dd>Trước 08/11/2026</dd></div>
+          <div><dt>Hạn đăng</dt><dd><span class="hn-han hn-han-thuong">Đăng trước 08/11 · còn 18 ngày</span></dd></div>
+          <div><dt>Góc viết</dt><dd>Ai bị ảnh hưởng – cần làm gì – trước ngày nào</dd></div>
           <div><dt>Từ khóa</dt><dd>thủ tục cấp sổ đỏ lần đầu</dd></div>
           <div><dt>Nền tảng</dt><dd>Website · Facebook · Video ngắn</dd></div>
         </dl>
@@ -738,17 +799,18 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
       </article>
       
       <article class="hn-lead">
-        <p class="hn-lead-eyebrow">
+        <p class="hn-lead-top">
           <span class="hn-stream hn-stream-public">Đại chúng</span>
-          <span>viết trước</span>
+          <span class="hn-lead-rank">Viết trước</span>
           <span class="st st-proposed" data-status-for="T-20261021-05">Đề xuất</span>
         </p>
         <h3 class="hn-lead-title"><a href="#goi-y.T-20261021-05">Bị bùng cọc khi mua đất: lấy lại tiền cọc thế nào?</a></h3>
-        <ul class="hn-why">
+        <ul class="hn-why" aria-label="Vì sao nên viết hôm nay">
           <li>6 nguồn cùng hỏi · bài đối thủ xem nhiều nhất tăng 28% trong 24 giờ</li><li>1 báo, 3 đối thủ đã viết</li>
         </ul>
         <dl class="hn-facts">
-          <div><dt>Đăng</dt><dd>Không gấp</dd></div>
+          <div><dt>Hạn đăng</dt><dd><span class="hn-han hn-han-nhe">Không gấp</span></dd></div>
+          <div><dt>Góc viết</dt><dd>Trả lời ngắn – căn cứ hiện hành – điểm khác với bài đã có</dd></div>
           <div><dt>Từ khóa</dt><dd>bùng cọc mua đất</dd></div>
           <div><dt>Nền tảng</dt><dd>Website · Facebook · Video ngắn</dd></div>
         </dl>
@@ -772,7 +834,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
               <span class="hn-row-title">Hợp đồng lao động điện tử: 3 điểm mới người lao động cần biết</span>
               <span class="hn-meta">Hiệu lực 01/12/2026 (còn 41 ngày)</span>
             </span>
-            <span class="hn-next-when">Trước 23/10/2026<span class="st st-proposed" data-status-for="T-20261021-02">Đề xuất</span></span>
+            <span class="hn-next-when"><span class="hn-han hn-han-gap">còn 2 ngày</span><span class="st st-proposed" data-status-for="T-20261021-02">Đề xuất</span></span>
           </a>
         </li>
         
@@ -783,7 +845,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
               <span class="hn-row-title">Dự thảo mới về hộ kinh doanh: góp ý trước 05/11/2026, những gì sẽ thay đổi?</span>
               <span class="hn-meta">Hạn góp ý 05/11/2026 (còn 15 ngày)</span>
             </span>
-            <span class="hn-next-when">Trước 29/10/2026<span class="st st-selected" data-status-for="T-20261021-03">Đã chọn</span></span>
+            <span class="hn-next-when"><span class="hn-han hn-han-thuong">còn 8 ngày</span><span class="st st-selected" data-status-for="T-20261021-03">Đã chọn</span></span>
           </a>
         </li>
         
@@ -794,7 +856,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
               <span class="hn-row-title">Tranh chấp lối đi chung: hướng dẫn theo quy định hiện hành</span>
               <span class="hn-meta">3 đối thủ đã viết trong 30 ngày, văn phòng chưa có bài</span>
             </span>
-            <span class="hn-next-when">Không gấp<span class="st st-proposed" data-status-for="T-20261021-04">Đề xuất</span></span>
+            <span class="hn-next-when"><span class="hn-han hn-han-nhe">Không gấp</span><span class="st st-proposed" data-status-for="T-20261021-04">Đề xuất</span></span>
           </a>
         </li>
         
@@ -805,7 +867,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
               <span class="hn-row-title">Giả danh cán bộ thuế gọi điện lừa đảo: pháp luật xử lý thế nào?</span>
               <span class="hn-meta">3 báo đưa tin trong 24 giờ (minh họa)</span>
             </span>
-            <span class="hn-next-when">Trong 24 giờ (trước 22/10/2026)<span class="st st-proposed" data-status-for="T-20261021-06">Đề xuất</span></span>
+            <span class="hn-next-when"><span class="hn-han hn-han-gap">24 giờ</span><span class="st st-proposed" data-status-for="T-20261021-06">Đề xuất</span></span>
           </a>
         </li>
         
@@ -814,7 +876,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
     
   </section>
 
-  <section class="hn-block" aria-labelledby="hn-moi--hom-nay">
+  <section class="hn-block" aria-labelledby="hn-moi--hom-nay" data-anchor="moi">
     <div class="hn-block-head">
       <h2 id="hn-moi--hom-nay">Có gì mới</h2>
       <a class="hn-link" href="#van-ban">Tra cứu văn bản</a>
@@ -826,14 +888,14 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
           
           <li>
             <a class="hn-row-title" href="#van-ban.101">Quy định chi tiết về đăng ký đất đai, cấp Giấy chứng nhận quyền sử dụng đất lần đầu</a>
-            <span class="hn-meta"><span class="mono">1xx/2026/NĐ-CP (minh họa)</span> · Chính phủ · hiệu lực 15/11/2026</span>
-            <span class="hn-ok">Có căn cứ gốc</span>
+            <span class="hn-meta">Chính phủ · <span class="mono">1xx/2026/NĐ-CP (minh họa)</span></span>
+            <span class="hn-doc-foot"><span class="hn-ok">Có căn cứ gốc</span><span>Hiệu lực 15/11 · còn 25 ngày</span></span>
           </li>
           
           <li>
             <a class="hn-row-title" href="#van-ban.102">Hướng dẫn giao kết hợp đồng lao động bằng phương tiện điện tử</a>
-            <span class="hn-meta"><span class="mono">2xx/2026/TT-BNV (minh họa)</span> · Bộ Nội vụ · hiệu lực 01/12/2026</span>
-            <span class="hn-ok">Có căn cứ gốc</span>
+            <span class="hn-meta">Bộ Nội vụ · <span class="mono">2xx/2026/TT-BNV (minh họa)</span></span>
+            <span class="hn-doc-foot"><span class="hn-ok">Có căn cứ gốc</span><span>Hiệu lực 01/12 · còn 41 ngày</span></span>
           </li>
           
         </ul>
@@ -872,7 +934,7 @@ a.hn-row-title:hover { color: var(--ink); text-decoration: underline; }
     </div>
   </section>
 
-  <section class="hn-block" aria-labelledby="hn-doi-thu--hom-nay">
+  <section class="hn-block" aria-labelledby="hn-doi-thu--hom-nay" data-anchor="doi-thu">
     <div class="hn-block-head">
       <h2 id="hn-doi-thu--hom-nay">Đối thủ viết gì</h2>
       <a class="hn-link" href="#doi-thu.tong-hop">Tổng hợp 7 ngày</a>
@@ -5829,6 +5891,13 @@ Phát hiện 09:40 20/10
       } else {
         toast("Không sao chép được", "Chọn và sao chép tay: " + text);
       }
+      return;
+    }
+    var jump = e.target.closest("[data-jump]");
+    if (jump) {
+      var scope = jump.closest("[data-view]") || document;
+      var to = scope.querySelector('[data-anchor="' + jump.dataset.jump + '"]');
+      if (to) to.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
       return;
     }
     var btn = e.target.closest("button[data-action]");
