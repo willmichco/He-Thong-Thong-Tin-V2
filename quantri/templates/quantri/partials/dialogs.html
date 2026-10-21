@@ -1,0 +1,68 @@
+<dialog id="dlg-dan-link" aria-labelledby="dlg-dan-link-title">
+  <form class="dlg" data-form="dan-link" novalidate>
+    <h2 id="dlg-dan-link-title">Dán link cần theo dõi</h2>
+    <p class="muted small">Fanpage, TikTok, bài báo hoặc trang máy không tự đọc được. Link phải thuộc danh sách tên miền hoặc danh sách trắng.</p>
+    <div class="field">
+      <label for="dl-url">Link</label>
+      <input id="dl-url" name="url" type="url" inputmode="url" placeholder="https://www.facebook.com/…" required>
+      <p class="err" data-err hidden></p>
+    </div>
+    <div class="field">
+      <label for="dl-platform">Nền tảng</label>
+      <select id="dl-platform" name="platform">
+        <option value="facebook">Facebook</option>
+        <option value="tiktok">TikTok</option>
+        <option value="youtube">YouTube</option>
+        <option value="press">Báo chí</option>
+        <option value="web" selected>Trang web khác</option>
+      </select>
+      <p class="hint">Tự nhận từ tên miền khi dán; sửa được.</p>
+    </div>
+    <div class="field">
+      <label for="dl-topic">Chủ đề (không bắt buộc)</label>
+      <select id="dl-topic" name="topic">
+        <option value="">Để hệ thống tự xếp</option>
+        {% for ma, ten in danh_sach_chu_de %}<option value="{{ ma }}">{{ ma }} · {{ ten }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="dl-note">Ghi chú</label>
+      <textarea id="dl-note" name="note" placeholder="Ví dụ: nhiều bình luận hỏi cách đòi lại tiền cọc"></textarea>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" data-close>Hủy</button>
+      <button type="submit" class="btn btn-ink">Gửi</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-xac-nhan" aria-labelledby="dlg-xac-nhan-title">
+  <form class="dlg" data-form="xac-nhan" novalidate>
+    <h2 id="dlg-xac-nhan-title" data-title>Xác nhận</h2>
+    <p data-message></p>
+    <div class="field" data-reason-wrap hidden>
+      <label for="xn-reason">Lý do</label>
+      <select id="xn-reason" name="reason">
+        <option value="">Chọn lý do</option>
+        <option value="duplicate">Trùng</option>
+        <option value="off_practice">Không hợp chuyên môn</option>
+        <option value="low_interest">Ít người quan tâm</option>
+        <option value="insufficient_basis">Chưa đủ căn cứ</option>
+        <option value="other">Khác (ghi chú bắt buộc)</option>
+      </select>
+    </div>
+    <div class="field" data-note-wrap hidden>
+      <label for="xn-note">Ghi chú</label>
+      <textarea id="xn-note" name="note"></textarea>
+    </div>
+    <div class="field" data-url-wrap hidden>
+      <label for="xn-url">Link bài trên website (bắt buộc, thuộc luatsunam.com)</label>
+      <input id="xn-url" name="web_url" type="url" placeholder="https://luatsunam.com/…">
+    </div>
+    <p class="err" data-err hidden></p>
+    <div class="dlg-foot">
+      <button type="button" class="btn" data-close>Hủy</button>
+      <button type="submit" class="btn btn-ink" data-confirm-label>Xác nhận</button>
+    </div>
+  </form>
+</dialog>

@@ -1,0 +1,99 @@
+{% load quantri_tags %}<article class="full" aria-labelledby="the-{{ c.ma }}">
+  <a class="back" href="{% url 'goi_y' %}">← Danh sách thẻ</a>
+  <div class="full-head">
+    <span class="chip chip-{{ c.muc.lop }}">{{ c.muc.ten }}</span>
+    <span class="card-kind">{{ c.luong }} · {{ c.loai }}{% if c.rank_in_stream %} · Hạng {{ c.rank_in_stream }}{% endif %} · mã {{ c.ma }}</span>
+    <span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span>
+    {% if c.basis_verified %}<span class="chip chip-ok">Có căn cứ gốc</span>{% else %}<span class="chip chip-warn">Chưa đủ căn cứ</span>{% endif %}
+  </div>
+  {% if c.case_in_progress %}<p class="chip chip-case">Vụ việc đang giải quyết – lưu ý giới hạn bình luận</p>{% endif %}
+  {% if not c.basis_verified %}<p class="card-warn">{{ c.basis_note }}.{% if c.can_xem %} <a href="{% url 'van_ban_can_xem' %}#{{ c.can_xem }}">Mở việc Cần xem tương ứng</a>.{% endif %} Thẻ chưa có căn cứ gốc thì không vào bản tin và không chọn được để viết.</p>{% endif %}
+
+  <div>
+    <h2 id="the-{{ c.ma }}" class="eyebrow">Tiêu đề đề xuất</h2>
+    <ol class="titles">
+      {% for t in c.title_options %}<li><span class="t">{{ t }}</span> <button type="button" class="btn btn-quiet btn-sm copy" data-copy="{{ t }}">Sao chép</button></li>{% endfor %}
+    </ol>
+  </div>
+
+  <dl class="dl">
+    <dt>Góc tiếp cận</dt><dd>{{ c.angle }}</dd>
+    <dt>Lý do gợi ý</dt>
+    <dd>{% if c.moc %}{{ c.moc }}{% if c.moc_con_ngay is not None %} ({{ c.moc_con_ngay|con_lai }}){% endif %} · {% endif %}{{ c.n_bao }} báo, {{ c.n_doi_thu }} đối thủ viết trong 72 giờ{% if c.quan_tam %} · {{ c.quan_tam }}{% endif %}</dd>
+    <dt>Căn cứ</dt>
+    <dd>
+      {% if c.van_ban %}
+        <a href="{% url 'van_ban_chi_tiet' c.van_ban.id %}"><span class="mono">{{ c.van_ban.so_hieu }}</span></a> – <span class="doc-title">{{ c.van_ban.title_summary }}</span>
+        {% if c.basis_verified %}<span class="chip chip-ok">Có căn cứ gốc</span>{% else %}<span class="chip chip-warn">Chưa đủ căn cứ</span>{% endif %}
+        {% if c.van_ban.excerpts.effective_date %}<details class="trich"><summary>Đoạn trích</summary><div class="excerpt">"{{ c.van_ban.excerpts.effective_date }}"</div></details>{% endif %}
+        {% for r in c.van_ban.relations %}<div class="small">{{ r.relation }} {{ r.other }}{% if r.scope %} ({{ r.scope }}){% endif %}</div>{% endfor %}
+      {% else %}
+        <span class="muted">Chưa tìm thấy văn bản gốc trên Tầng 1.</span>
+      {% endif %}
+    </dd>
+    {% if c.card_type != "qa" and c.card_type != "news" and c.card_type != "gap" %}
+    <dt>Điểm mới</dt>
+    <dd>
+      {% if c.van_ban and c.van_ban.ai_summary %}
+        <ul class="points">{% for y, dieu in c.van_ban.ai_summary %}<li>{{ y }} ({{ dieu }})</li>{% endfor %}</ul>
+        <span class="ai-note">(AI tóm tắt; không phải căn cứ, mỗi ý đã kiểm có đoạn trích trong văn bản)</span>
+      {% else %}<span class="muted">Chưa có tóm tắt.</span>{% endif %}
+    </dd>
+    {% endif %}
+    <dt>Từ khóa SEO</dt>
+    <dd>
+      Chính: <strong>{{ c.seo_primary }}</strong> <button type="button" class="btn btn-quiet btn-sm copy" data-copy="{{ c.seo_primary }}">Sao chép</button>
+      {% if c.seo_secondary %}<div class="small">Phụ: {{ c.seo_secondary|join:" · " }}</div>{% endif %}
+    </dd>
+    <dt>Dẫn Facebook</dt>
+    <dd>
+      {% if c.fb_hook %}"{{ c.fb_hook }}" <button type="button" class="btn btn-quiet btn-sm copy" data-copy="{{ c.fb_hook }}">Sao chép</button>
+      <div class="small muted">{{ c.fb_hook_sources }} nguồn cùng hỏi · link ở bình luận đầu</div>{% else %}<span class="muted">Chưa có câu hỏi phù hợp trong kho câu hỏi.</span>{% endif %}
+    </dd>
+    <dt>Bài đối thủ</dt>
+    <dd>
+      {% for b in c.doi_thu %}<div>{{ b.don_vi }} – {{ b.dang }} – {{ b.ngay }}{% if b.loi_thoi %} <span class="chip chip-outdated">Có thể lỗi thời</span>{% endif %}</div>{% empty %}<span class="muted">Chưa có đối thủ viết.</span>{% endfor %}
+    </dd>
+    {% if c.goc_khac_biet %}<dt>Góc khác biệt</dt><dd>{{ c.goc_khac_biet }}</dd>{% endif %}
+    <dt>Nền tảng</dt>
+    <dd>{% for nt, mo_ta in c.nen_tang %}<div><strong>{{ nt }}:</strong> {{ mo_ta }}</div>{% endfor %}</dd>
+    <dt>Đăng tốt nhất</dt><dd>{{ c.dang_tot_nhat }}</dd>
+  </dl>
+
+  <div class="actions" data-card-actions="{{ c.ma }}">
+    <button type="button" class="btn btn-ink" data-action="select" data-card="{{ c.ma }}" data-new-status="selected" data-note="Thẻ chuyển Đã chọn. Ghi vào suggestion_cards, card_decisions, activity_log."{% if not c.basis_verified or c.status != "proposed" %} disabled{% endif %}>Chọn</button>
+    <button type="button" class="btn" data-action="drop" data-card="{{ c.ma }}" data-new-status="dropped" data-confirm="Bỏ thẻ" data-message="Bỏ thẻ &quot;{{ c.tieu_de }}&quot;. Chọn một lý do; lý do dùng cho vòng học và chống lặp (không đề xuất lại trong 7 ngày)." data-reason data-note="Thẻ chuyển Đã bỏ. Ghi vào suggestion_cards, card_decisions, activity_log."{% if c.status == "dropped" %} disabled{% endif %}>Bỏ</button>
+    {% if c.status == "selected" %}<button type="button" class="btn" data-action="unselect" data-card="{{ c.ma }}" data-new-status="proposed" data-note="Thẻ về Đề xuất, vẫn giữ lịch sử. Ghi vào suggestion_cards, card_decisions.">Bỏ chọn</button>{% endif %}
+    <button type="button" class="btn" data-action="written" data-card="{{ c.ma }}" data-new-status="written" data-confirm="Đánh dấu đã viết" data-message="Mở biểu mẫu nhập bài, điền sẵn tiêu đề, chủ đề, từ khóa và viện dẫn từ thẻ. Link website chưa bắt buộc." data-note="Thẻ chuyển Đã viết. Ghi vào firm_articles (written), firm_article_citations, suggestion_cards, card_decisions."{% if not c.basis_verified %} disabled{% endif %}>Đã viết</button>
+    <button type="button" class="btn" data-action="published" data-card="{{ c.ma }}" data-new-status="published" data-confirm="Đánh dấu đã đăng" data-message="Nhập link bài chính trên website. Link phải thuộc luatsunam.com." data-url data-note="Thẻ chuyển Đã đăng. Ghi vào firm_articles (published), suggestion_cards, card_decisions."{% if not c.basis_verified %} disabled{% endif %}>Đã đăng</button>
+    <button type="button" class="btn btn-quiet" data-action="export" data-note="Tải hồ sơ dữ kiện ho-so_2026-10-21_{{ c.ma }}.pdf. Ghi activity_log (export).">Xuất PDF</button>
+    <button type="button" class="btn btn-quiet" data-action="export" data-note="Tải hồ sơ dữ kiện ho-so_2026-10-21_{{ c.ma }}.md. Ghi activity_log (export).">Xuất Markdown</button>
+  </div>
+
+  <div class="section-title"><h2>Hồ sơ dữ kiện</h2><span class="small muted">Chỉ dữ kiện có căn cứ gốc được dùng làm căn cứ khi viết</span></div>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Trường</th><th>Giá trị và đoạn trích</th><th>Nguồn</th><th>Thu thập lúc</th><th>Nhãn</th></tr></thead>
+      <tbody>
+        {% for f in ho_so %}
+        <tr>
+          <td class="nowrap">{{ f.truong }}</td>
+          <td>{{ f.gia_tri }}{% if f.trich %}<details class="trich"><summary>Đoạn trích</summary><div class="excerpt">"{{ f.trich }}"</div></details>{% endif %}</td>
+          <td>{{ f.nguon }}</td>
+          <td class="nowrap small">{{ f.luc }}</td>
+          <td>{% if f.nhan == "verified" %}<span class="chip chip-ok">Có căn cứ gốc</span>{% else %}<span class="chip chip-warn">Chưa đủ</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if c.card_type == "news" %}
+  <div><h3>Bài báo đưa tin</h3>{% for ten, ngay in c.bai_bao %}<div class="small">{{ ten }} – {{ ngay }}</div>{% endfor %}</div>
+  {% endif %}
+  {% if c.cau_hoi %}
+  <div><h3>Câu hỏi người dân hay hỏi</h3>{% for q, n in c.cau_hoi %}<div class="small">{{ q }} <span class="muted">({{ n }} nguồn cùng hỏi)</span></div>{% endfor %}</div>
+  {% endif %}
+
+  <div class="section-title"><h2>Lịch sử</h2></div>
+  {% for ten, luc, ghi_chu in c.lich_su %}<p class="small">{{ ten }} · {{ luc }}{% if ghi_chu %} · {{ ghi_chu }}{% endif %}</p>{% empty %}<p class="empty">Chưa có lần chọn, bỏ nào.</p>{% endfor %}
+</article>

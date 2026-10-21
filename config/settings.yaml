@@ -1,0 +1,71 @@
+# Ngưỡng do văn phòng tự đặt – Đặc tả 3.2, mục 20.
+# Giá trị ban đầu chốt ngày 20/10/2026, bổ sung ngày 21/10/2026; xem lại sau 4 tuần chạy thật.
+# Chỉnh trực tiếp tệp này; màn hình Cấu hình làm sau.
+#
+# Con số lấy từ luật (thời hạn, mức phạt, tỷ lệ...) KHÔNG đặt ở đây: chúng nằm trong bảng cấu hình
+# quy tắc (mục 11), có phiên bản và căn cứ pháp lý đi kèm.
+#
+# Bản mẫu giao diện chưa đọc tệp này; Lát 1 (thu thập) sẽ đọc khi khởi động.
+
+chu_de_tin_tuc:
+  het_han_sau_ngay_khong_nhac: 14
+
+luot_xem_tang_nhanh:
+  ty_le_tang_toi_thieu: 0.20        # từ 20% trở lên
+  khoang_cach_quet_toi_thieu_gio: 24
+  luot_xem_toi_thieu: 500
+
+gop_cau_hoi:
+  tu_gop_tu: 0.85                   # độ giống >= 0,85: tự gộp
+  hoi_ai_tu: 0.65                   # 0,65 <= độ giống < 0,85: hỏi AI; dưới 0,65: tách riêng
+
+tran_truy_cap_moi_ngay:
+  tang_1_moi_nguon: 300             # yêu cầu
+  bao_chi: 100
+  doi_thu_trang: 80
+
+lich_quet_tang_1:
+  gio_bat_dau: "06:00"
+  gio_ket_thuc: "22:00"
+  chu_ky_phut: 60
+  nguon_uu_tien: [cong_bao, vbpl]   # mỗi 30 phút trong giờ hành chính
+  chu_ky_uu_tien_phut: 30
+
+nguon_loi:
+  bao_sau_so_luot_loi_lien_tiep: 2
+  chuyen_dan_link_tay_sau_gio: 24
+
+nguon_im_lang:
+  boi_so_khoang_cach_thuong_le: 3
+
+do_phu:
+  canh_bao_duoi: 0.80
+
+the_goi_y:
+  so_the_moi_ngay: [5, 7]
+  ty_le_luong:
+    chuyen_mon: 0.667               # 2/3
+    dai_chung: 0.333                # 1/3
+  chong_lap_ngay:
+    sau_khi_bo: 7
+    chua_ai_xu_ly: 3
+
+can_xem:
+  nhac_trong_ban_tin_sau_gio: 48
+  viec_lien_quan_khan_nhac_telegram_sau_gio: 4
+
+tin_khan_chua_xem:
+  nhac_mot_lan_sau_gio: 4
+  gio_yen_lang: ["22:00", "07:00"]  # rơi vào khoảng này thì nhắc lúc 07:00
+
+han_muc_ai_usd_moi_ngay:
+  thuong: 3.00
+  ky_hop_quoc_hoi: 5.00
+  canh_bao_o: 0.70
+
+phien_dang_nhap:
+  het_han_khi_khong_thao_tac_gio: 2
+  toi_da_gio: 12
+
+ban_tin:
+  gio_gui: "06:30"                  # Telegram tóm tắt và Gmail bản đầy đủ

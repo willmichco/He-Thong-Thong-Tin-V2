@@ -1,0 +1,11 @@
+{% load quantri_tags %}<a class="card{% if chon and chon.ma == c.ma %} is-open{% endif %}" href="{% url 'goi_y_the' c.ma %}" data-card="{{ c.ma }}" data-type="{{ c.card_type }}" data-status="{{ c.status }}" data-text="{{ c.tieu_de|lower }} {{ c.seo_primary|lower }}">
+  <div class="card-head">
+    <span class="lvl lvl-{{ c.muc.lop }}">{{ c.muc.ten }}</span>
+    <span class="card-kind">{{ c.loai }}{% if c.rank_in_stream %} · #{{ c.rank_in_stream }}{% endif %}</span>
+    {% if c.case_in_progress %}<span class="chip chip-case">Vụ việc đang giải quyết</span>{% endif %}
+    <span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span>
+  </div>
+  <div class="card-title">{{ c.tieu_de }}</div>
+  <div class="card-meta">{% if c.moc %}{{ c.moc }}{% if c.moc_con_ngay is not None %} ({{ c.moc_con_ngay|con_lai }}){% endif %} · {% endif %}{{ c.n_bao }} báo, {{ c.n_doi_thu }} đối thủ đã viết · <span class="kw">{{ c.seo_primary }}</span></div>
+  {% if not c.basis_verified %}<div class="card-warn"><span class="chip chip-warn">Chưa đủ căn cứ</span> {{ c.basis_note }}</div>{% endif %}
+</a>

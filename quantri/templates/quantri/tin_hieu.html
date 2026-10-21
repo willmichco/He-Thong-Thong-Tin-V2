@@ -1,0 +1,31 @@
+{% extends "quantri/base.html" %}
+{% block title %}Tín hiệu dán tay · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Tín hiệu dán tay</h1>
+    <p class="lead">Những gì máy không tự đọc được: fanpage, TikTok, trang khó đọc. Dán bằng nút "+ Dán link" ở đầu mọi trang.</p>
+  </div>
+  <button type="button" class="btn btn-ink" data-open="dlg-dan-link">+ Dán link</button>
+</div>
+<div class="panel">
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Link</th><th>Nền tảng</th><th>Tiêu đề, ghi chú</th><th>Chủ đề</th><th>Kiểm tra</th><th>Lúc</th></tr></thead>
+      <tbody>
+        {% for s in signals %}
+        <tr>
+          <td class="mono small" style="overflow-wrap:anywhere">{{ s.url }}</td>
+          <td>{{ s.nen_tang }}</td>
+          <td>{{ s.tieu_de|default:"—" }}{% if s.ghi_chu %}<div class="small muted">{{ s.ghi_chu }}</div>{% endif %}</td>
+          <td class="mono">{{ s.chu_de|default:"—" }}</td>
+          <td>{% if s.ket_qua == "ok" %}<span class="chip chip-ok">Đạt</span>{% else %}<span class="chip chip-warn">Bị từ chối</span><div class="small">{{ s.ly_do }}</div>{% endif %}</td>
+          <td class="nowrap small">{{ s.luc }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Xóa được tín hiệu dán nhầm trong 24 giờ khi chưa dùng cho thẻ nào.</p>
+</div>
+{% endblock %}

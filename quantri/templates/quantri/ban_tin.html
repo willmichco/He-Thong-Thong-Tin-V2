@@ -1,0 +1,94 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}Bản tin 21/10/2026 · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<a class="back" href="{% url 'hom_nay' %}">← Hôm nay</a>
+<div class="page-head">
+  <div>
+    <h1>Bản tin {{ thu_hom_nay }} {{ hom_nay|ngay }}</h1>
+    <p class="lead">Bản đầy đủ gửi Gmail lúc 06:30 (mẫu Phụ lục B.4). Tiêu đề email: <span class="mono">[Bản tin pháp lý] {{ thu_hom_nay }} {{ hom_nay|ngay }} – {{ alerts|length }} Khẩn · {{ so_goi_y }} gợi ý</span></p>
+  </div>
+</div>
+
+<div class="grid-2-wide">
+<article class="mail" aria-label="Nội dung email bản tin">
+  <section>
+    <h2>① Khẩn</h2>
+    {% for a in alerts %}
+    <div class="box-urgent">
+      <strong><span class="mono">{{ a.van_ban.so_hieu }}</span> · {{ a.case_code }} {{ a.ten_loai }}</strong>
+      <span>{{ a.su_viec }}</span>
+      <span class="small"><a href="{% url 'canh_bao' a.ma %}">Mở tin</a> · chưa bấm Đã xem</span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>② Hôm nay nên viết gì</h2>
+    <div class="sub-head">Chuyên môn ({{ the_pro|length }})</div>
+    <div class="rows">
+      {% for c in the_pro %}
+      <div class="row">
+        <div class="row-title"><span class="lvl lvl-{{ c.muc.lop }}">{{ c.loai }} · #{{ c.rank_in_stream }}</span><br><a href="{% url 'goi_y_the' c.ma %}"><strong>{{ c.tieu_de }}</strong></a></div>
+        <span></span>
+        <div class="row-meta">{% if c.moc %}{{ c.moc }} ({{ c.moc_con_ngay|con_lai }}) · {% endif %}{{ c.n_bao }} báo, {{ c.n_doi_thu }} đối thủ đã viết · {{ c.seo_primary }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="sub-head">Đại chúng ({{ the_pub|length }})</div>
+    <div class="rows">
+      {% for c in the_pub %}
+      <div class="row">
+        <div class="row-title"><span class="lvl lvl-{{ c.muc.lop }}">{{ c.loai }} · #{{ c.rank_in_stream }}</span><br><a href="{% url 'goi_y_the' c.ma %}"><strong>{{ c.tieu_de }}</strong></a></div>
+        <span></span>
+        <div class="row-meta">{% if c.quan_tam %}{{ c.quan_tam }} · {% endif %}{{ c.seo_primary }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>③ Có gì mới</h2>
+    <div class="sub-head">Văn bản mới – nhóm A ({{ van_ban_moi|length }})</div>
+    {% for d in van_ban_moi %}<p class="small"><span class="mono">{{ d.so_hieu }}</span> – {{ d.title_summary }} – hiệu lực {{ d.effective_date|ngay }} – [{{ d.source }}]</p>{% endfor %}
+    <p class="small">Nhóm B: {{ digest.van_ban_moi_b.so_luong }} văn bản, nổi bật: {{ digest.van_ban_moi_b.noi_bat|join:"; " }}.</p>
+    <div class="sub-head">Sắp có hiệu lực</div>
+    {% for e in sap_hieu_luc %}<p class="small"><span class="num">{{ e.ngay|ngay }}</span> ({{ e.con_ngay|con_lai }}) – {{ e.tieu_de }}</p>{% endfor %}
+    <div class="sub-head">Dự thảo đang lấy ý kiến</div>
+    {% for d in du_thao %}<p class="small">Hạn {{ d.comment_deadline|ngay }} – {{ d.title_summary }} – {{ d.issuer_name }}</p>{% endfor %}
+    <div class="sub-head">Được nhiều báo cùng viết</div>
+    {% for ten, n in digest.tin_nhieu_bao %}<p class="small">{{ ten }} ({{ n }} báo)</p>{% endfor %}
+  </section>
+
+  <section>
+    <h2>④ Đối thủ viết gì</h2>
+    <p class="small">24 giờ qua: 23 bài · Đối thủ A 4 · Đối thủ B 3 · Đối thủ G 3 · Đối thủ C 2 · Đối thủ D 2 · 2 đơn vị dữ liệu 9.</p>
+    <div class="sub-head">Chủ đề viết nhiều trong 7 ngày</div>
+    <p class="small">{% for t in chu_de_nhieu %}{{ t.ten }} ({{ t.so_bai }} bài){% if not forloop.last %} · {% endif %}{% endfor %}</p>
+    <div class="sub-head">Xem nhiều hoặc tăng nhanh</div>
+    {% for a in bai_tang %}<p class="small">{{ a.don_vi }} – {{ a.tieu_de }} – {{ a.luot_xem|so }} lượt (+{{ a.tang }}%)</p>{% endfor %}
+    <div class="sub-head">Có thể lỗi thời</div>
+    {% for a in bai_loi_thoi %}<p class="small">{{ a.don_vi }} – {{ a.tieu_de }} ({{ a.ngay }}): {{ a.can_cu }}</p>{% endfor %}
+    <div class="sub-head">Câu hỏi mới</div>
+    {% for q in cau_hoi_moi %}<p class="small">{{ q.cau_hoi }} ({{ q.so_nguon }} nguồn)</p>{% endfor %}
+    <div class="sub-head">Khoảng trống</div>
+    {% for k in khoang_trong %}<p class="small">{{ k.ten }} ({{ k.so_nguon }} nguồn)</p>{% endfor %}
+  </section>
+
+  <section>
+    <h2>⑤ Tình trạng</h2>
+    <p class="small">{{ review_items|length }} việc cần xem, <span class="over">1 quá 48 giờ</span>.</p>
+    {% for s in nguon_van_de %}<p class="small">{{ s.name }}: {{ s.note }}</p>{% endfor %}
+    <p class="small">Chi phí AI hôm qua 0,77 USD / hạn mức 3,00 USD. Bản tin lập lúc {{ digest.lap_luc }}, đúng giờ.</p>
+  </section>
+
+  <p class="small muted">Bản tin nội bộ của văn phòng, không chuyển tiếp ra ngoài. Dữ kiện có ✅ đã thấy trên văn bản gốc Tầng 1, kèm đoạn trích; dữ kiện có ⚠️ chưa được dùng làm căn cứ khi viết.</p>
+</article>
+
+<aside class="panel">
+  <h2>Tóm tắt Telegram 6h30</h2>
+  <pre class="tele">{{ telegram }}</pre>
+  <p class="small muted">5 dòng nội dung, không tính dòng tiêu đề (Phụ lục B.2). Có tin Khẩn chưa xem nên dòng "1." là tin Khẩn, dòng "2." là thẻ hạng 1 luồng Chuyên môn.</p>
+</aside>
+</div>
+{% endblock %}

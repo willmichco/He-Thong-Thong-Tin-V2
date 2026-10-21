@@ -1,0 +1,55 @@
+{% load static quantri_tags %}<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>{% block title %}Thông tin pháp lý nóng{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+<link rel="stylesheet" href="{% static 'quantri/app.css' %}">
+</head>
+<body>
+<!--SHELL-START-->
+<div class="app" data-mode="server" data-allowed-domains="{{ ten_mien_cho_phep|join:',' }}">
+  <aside class="side" aria-label="Điều hướng chính">
+    <a class="brand" href="{% url 'hom_nay' %}">
+      <span class="brand-mark" aria-hidden="true">TT</span>
+      <span class="brand-text"><strong>Thông tin pháp lý nóng</strong><small>Bản mẫu · Đặc tả 3.2</small></span>
+    </a>
+    <nav class="nav">
+      {% for n in nav %}
+      <a href="{% url n.name %}" class="nav-item{% if trang == n.name %} is-active{% endif %}" data-nav="{{ n.name }}">
+        {% include "quantri/partials/icon.html" with name=n.icon %}
+        <span>{{ n.ten }}</span>
+        {% if n.dem %}<span class="nav-count">{{ n.dem }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    </nav>
+    <p class="side-foot">Ba câu hỏi mỗi sáng: Có gì mới? Đối thủ viết gì? Hôm nay nên viết gì?</p>
+  </aside>
+  <div class="work">
+    <header class="top">
+      <div class="top-date">{{ thu_hom_nay }}, {{ hom_nay|ngay }}</div>
+      <div class="top-actions">
+        <button type="button" class="btn btn-ink" data-open="dlg-dan-link">+ Dán link</button>
+        <label class="switch" for="vang-mat"><input type="checkbox" id="vang-mat" data-away> Vắng mặt</label>
+        <span class="user">Luật sư chủ trì</span>
+        <a href="{% url 'dang_nhap' %}">Đăng xuất</a>
+      </div>
+    </header>
+    <p class="demo-note">Bản mẫu giao diện: dữ liệu minh họa, không phải văn bản hay bài viết thật. Ngày giả định: Thứ Tư 21/10/2026. Nút thao tác chỉ hiện thông báo, chưa ghi dữ liệu.</p>
+    <main id="main" class="page">
+<!--MAIN-START-->
+{% block content %}{% endblock %}
+<!--MAIN-END-->
+    </main>
+  </div>
+</div>
+{% include "quantri/partials/dialogs.html" %}
+<div class="toast-wrap" role="status" aria-live="polite"></div>
+<!--SHELL-END-->
+<script src="{% static 'quantri/app.js' %}"></script>
+</body>
+</html>

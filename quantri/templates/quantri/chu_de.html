@@ -1,0 +1,124 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}Chủ đề · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Chủ đề, kho bài, từ khóa</h1>
+    <p class="lead">Nền cho cả ba câu hỏi: danh mục chủ đề bản 1 (duyệt 19/10/2026), bài văn phòng đã viết và số liệu người đọc tìm kiếm.</p>
+  </div>
+</div>
+
+<nav class="tabs" aria-label="Các phần của màn hình Chủ đề">
+  <a class="tab{% if tab == 'danh-muc' %} is-active{% endif %}" href="{% url 'chu_de' %}">Danh mục</a>
+  <a class="tab{% if tab == 'kho-bai' %} is-active{% endif %}" href="{% url 'chu_de_kho_bai' %}">Kho bài</a>
+  <a class="tab{% if tab == 'tu-khoa' %} is-active{% endif %}" href="{% url 'chu_de_tu_khoa' %}">Số liệu từ khóa</a>
+</nav>
+
+{% if tab == "danh-muc" %}
+<div class="panel">
+  <div class="panel-head"><h2>Nhóm A – 8 lĩnh vực hành nghề</h2><button type="button" class="btn btn-sm" data-action="add-topic" data-note="Thêm chủ đề; mã tự cấp theo nhóm và lĩnh vực. Ghi vào topics, activity_log.">+ Thêm chủ đề</button></div>
+  {% for lv in danh_muc_a %}
+  <details class="fold"{% if forloop.first %} open{% endif %}>
+    <summary>{{ lv.linh_vuc }} <span class="muted small">({{ lv.chu_de|length }} chủ đề)</span></summary>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Mã</th><th>Chủ đề</th><th>Cách nói dân gian</th><th class="r">Câu hỏi</th><th class="r">Bài đối thủ 30 ngày</th><th class="r">Bài văn phòng</th><th></th></tr></thead>
+        <tbody>
+          {% for t in lv.chu_de %}
+          <tr>
+            <td class="mono nowrap">{{ t.ma }}</td>
+            <td>{{ t.ten }}</td>
+            <td class="muted">{{ t.dan_gian|default:"—" }}</td>
+            <td class="r">{{ t.so_cau_hoi }}</td>
+            <td class="r">{{ t.so_bai_doi_thu }}</td>
+            <td class="r">{{ t.so_bai_vp }}</td>
+            <td>{% if t.khoang_trong %}<span class="chip chip-important">Khoảng trống</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {% endfor %}
+  <p class="small muted">Nhãn dùng chung "Công chứng" gắn được vào mọi chủ đề có khâu công chứng. Đổi tên chủ đề không đổi mã.</p>
+</div>
+<div class="grid-2">
+  <div class="panel">
+    <h2>Nhóm B – mức lĩnh vực</h2>
+    <div class="rows">{% for ma, ten, dan_gian in danh_muc_b %}<div class="row"><div class="row-title"><span class="mono">{{ ma }}</span> {{ ten }}</div><span></span>{% if dan_gian %}<div class="row-meta">{{ dan_gian }}</div>{% endif %}</div>{% endfor %}</div>
+  </div>
+  <div class="panel">
+    <h2>Tin tức pháp lý chung</h2>
+    <p class="small muted">Không dựng trước; chủ đề tin tức tự sinh từ gộp tin và hết hạn khi 14 ngày không được nhắc.</p>
+    <div class="rows">{% for t in tin_tuc %}<div class="row"><div class="row-title"><span class="mono">{{ t.ma }}</span> {{ t.ten }}</div>{% if t.con_han %}<span class="chip chip-ink">Còn hạn</span>{% else %}<span class="chip">Đã hết hạn</span>{% endif %}<div class="row-meta">Nhắc lần cuối {{ t.nhac_lan_cuoi }} · hết hạn {{ t.het_han }}{% if t.con_han %} · <button type="button" class="btn btn-quiet btn-sm" data-action="promote" data-note="Nâng thành chủ đề cố định; cấp mã mới, giữ liên kết cũ. Ghi vào topics, activity_log.">Nâng thành chủ đề cố định</button>{% endif %}</div></div>{% endfor %}</div>
+  </div>
+</div>
+
+{% elif tab == "kho-bai" %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>Bài của văn phòng ({{ kho_bai|length }})</h2>
+    <div class="actions">
+      <button type="button" class="btn btn-ink" data-action="add-article" data-confirm="Nhập bài" data-message="Biểu mẫu: tiêu đề, trạng thái, link website (bắt buộc khi Đã đăng), link Facebook và nền tảng khác, ngày đăng, chủ đề, từ khóa, nguồn gốc, danh sách viện dẫn (số hiệu và điều, khoản). Thiếu viện dẫn thì hệ thống không báo được khi văn bản bị đính chính, thay thế hoặc sửa đổi." data-note="Ghi vào firm_articles, firm_article_citations, activity_log.">+ Nhập bài</button>
+      <button type="button" class="btn" data-action="csv" data-note="Tải tệp CSV theo mẫu, xem trước và báo lỗi từng dòng rồi mới lưu.">Nhập nhiều bài (CSV)</button>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Tiêu đề</th><th>Trạng thái</th><th>Ngày đăng</th><th>Chủ đề</th><th>Nền tảng</th><th>Viện dẫn</th><th>Cảnh báo</th></tr></thead>
+      <tbody>
+        {% for b in kho_bai %}
+        <tr>
+          <td>{{ b.tieu_de }}<div class="small muted">{{ b.nguon_goc }}</div></td>
+          <td class="nowrap">{% if b.status == "published" %}<span class="st st-published">Đã đăng</span>{% else %}<span class="st st-written">Đã viết</span>{% endif %}</td>
+          <td class="nowrap num">{{ b.ngay|default:"—" }}</td>
+          <td class="mono">{{ b.chu_de }}</td>
+          <td class="small">{% if b.web %}Website{% endif %}{% if b.facebook %} · Facebook{% endif %}{% if not b.web and not b.facebook %}—{% endif %}</td>
+          <td class="small">{% for v in b.vien_dan %}<div>{{ v }}</div>{% empty %}<span class="over">Chưa nhập</span>{% endfor %}</td>
+          <td>{% if b.canh_bao %}<span class="chip chip-wrap{% if 'Khẩn' in b.canh_bao %} chip-urgent{% else %} chip-warn{% endif %}">{{ b.canh_bao }}</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% else %}
+<div class="grid-2-wide">
+  <div class="panel">
+    <h2>Từ khóa theo chủ đề</h2>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Từ khóa</th><th>Chủ đề</th><th class="r">Hiển thị</th><th class="r">Nhấp</th><th class="r">Vị trí TB</th><th class="r">Tìm/tháng</th><th class="r">Xu hướng</th></tr></thead>
+        <tbody>
+          {% for k in tu_khoa %}
+          <tr>
+            <td>{{ k.tu_khoa }}</td>
+            <td class="mono">{% if k.chu_de %}{{ k.chu_de }}{% else %}<button type="button" class="btn btn-quiet btn-sm" data-action="assign" data-note="Gắn từ khóa vào chủ đề. Ghi vào keyword_metrics, topics.">Gắn chủ đề</button>{% endif %}</td>
+            <td class="r">{{ k.hien_thi|so }}</td>
+            <td class="r">{{ k.nhap|so }}</td>
+            <td class="r">{% if k.vi_tri %}{{ k.vi_tri|floatformat:1 }}{% else %}—{% endif %}</td>
+            <td class="r">{{ k.tim_thang|so }}</td>
+            <td class="r">{{ k.xu_huong }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">Hiển thị, nhấp, vị trí: Search Console 30 ngày. Tìm/tháng: Keyword Planner. Xu hướng: Google Trends 30 ngày.</p>
+  </div>
+  <div class="panel">
+    <h2>Nhập tệp CSV</h2>
+    <div class="field">
+      <label for="csv-tu-khoa">Tệp xuất từ Search Console, Keyword Planner hoặc Google Trends</label>
+      <input id="csv-tu-khoa" type="file" accept=".csv,text/csv" data-csv-preview>
+      <p class="hint">Hệ thống nhận loại tệp theo tiêu đề cột, hiện xem trước số dòng, kỳ số liệu, dòng lỗi; bấm Lưu mới ghi.</p>
+    </div>
+    <p class="small" data-csv-result hidden></p>
+    <h2>Lần nhập gần nhất</h2>
+    <div class="rows">{% for ten, ngay, so_ngay in lan_nhap %}<div class="row"><div class="row-title">{{ ten }}</div><span class="small num">{{ ngay }}</span><div class="row-meta">{% if so_ngay > 30 %}<span class="over">{{ so_ngay }} ngày trước: cần nhập lại</span>{% else %}{{ so_ngay }} ngày trước{% endif %}</div></div>{% endfor %}</div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}{{ d.so_hieu }} · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<a class="back" href="{% url 'van_ban' %}">← Tra cứu văn bản</a>
+<div class="page-head">
+  <div>
+    <p class="mono muted">{{ d.so_hieu }}</p>
+    <h1 class="doc-title">{{ d.title_summary }}</h1>
+    <p class="lead">{{ d.issuer_name }} · {{ d.doc_type }} · nhóm {{ d.group_ab }} · {{ d.fields|join:", " }}</p>
+  </div>
+  <div class="actions">
+    {% if d.basis_label == "verified" %}<span class="chip chip-ok">Có căn cứ gốc</span>{% else %}<span class="chip chip-warn">Chưa đủ căn cứ</span>{% endif %}
+    <span class="chip">{{ d.tinh_trang }}</span>
+  </div>
+</div>
+{% if d.basis_note %}<p class="card-warn">{{ d.basis_note }}. <a href="{% url 'van_ban_can_xem' %}">Mở danh sách Cần xem</a>.</p>{% endif %}
+
+<div class="grid-2-wide">
+  <div class="panel">
+    <h2>Thông tin chung</h2>
+    <dl class="dl">
+      <dt>Số hiệu</dt><dd class="mono">{{ d.so_hieu }}{% if d.excerpts.number %}<details class="trich"><summary>Đoạn trích</summary><div class="excerpt">"{{ d.excerpts.number }}"</div></details>{% endif %}</dd>
+      <dt>Ngày ký</dt><dd>{{ d.signed_date|ngay|default:"—" }}{% if d.excerpts.signed_date %}<details class="trich"><summary>Đoạn trích</summary><div class="excerpt">"{{ d.excerpts.signed_date }}"</div></details>{% endif %}</dd>
+      <dt>Ngày hiệu lực</dt>
+      <dd>
+        {% if d.effective_date %}{{ d.effective_date|ngay }}{% if d.con_ngay_hieu_luc > 0 %} ({{ d.con_ngay_hieu_luc|con_lai }}){% endif %}{% elif d.comment_deadline %}Dự thảo – hạn góp ý {{ d.comment_deadline|ngay }}{% else %}<span class="muted">Chưa chốt</span>{% endif %}
+        {% if d.excerpts.effective_date %}<details class="trich"><summary>Đoạn trích</summary><div class="excerpt">"{{ d.excerpts.effective_date }}"</div></details>{% endif %}
+        {% for phan, ngay in d.partial_effects %}<div class="small"><span class="chip chip-watch">Hiệu lực riêng</span> {{ phan }}: {{ ngay|ngay }}</div>{% endfor %}
+      </dd>
+      <dt>Nguồn Tầng 1</dt><dd>{{ d.source }} · thu thập {{ d.collected }}</dd>
+    </dl>
+    <div class="actions">
+      <button type="button" class="btn" data-action="edit-field" data-confirm="Sửa một trường" data-message="Chọn giá trị từ đoạn trích của nguồn Tầng 1 hoặc gõ giá trị mới kèm ghi chú. Dữ kiện chuyển Có căn cứ gốc (người xác nhận); giá trị cũ vào nhật ký." data-require-note data-note="Ghi vào documents, activity_log (field_edit).">Sửa trường</button>
+      <button type="button" class="btn btn-quiet" data-action="download" data-note="Tải tệp gốc của lần lưu đang dùng.">Tải tệp gốc</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Điểm mới</h2>
+    {% if d.ai_summary %}
+    <ul class="points">{% for y, dieu in d.ai_summary %}<li>{{ y }} ({{ dieu }})</li>{% endfor %}</ul>
+    <p class="ai-note">(AI tóm tắt) Không phải căn cứ; mỗi ý đã kiểm có đoạn trích khớp trong văn bản.</p>
+    {% else %}<p class="empty">Chưa có tóm tắt cho văn bản này.</p>{% endif %}
+    <h2>Quan hệ</h2>
+    {% for r in d.relations %}
+    <div><strong>{{ r.relation }}</strong> {{ r.other }}{% if r.scope %} · {{ r.scope }}{% endif %}<details class="trich"><summary>Đoạn trích</summary><div class="excerpt">"{{ r.excerpt }}"</div></details></div>
+    {% empty %}<p class="empty">Chưa ghi nhận quan hệ với văn bản khác.</p>{% endfor %}
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Các lần lưu</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th class="r">Lần</th><th>Lý do</th><th>Nguồn</th><th>Thu thập</th><th>Mã băm</th><th>Cách trích chữ</th></tr></thead>
+      <tbody>{% for f in d.files %}<tr><td class="r">{{ f.seq }}</td><td>{{ f.reason }}</td><td>{{ f.source }}</td><td class="nowrap">{{ f.fetched }}</td><td class="mono">{{ f.sha }}</td><td>{{ f.method }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% if d.files|length > 1 %}<div class="actions"><button type="button" class="btn btn-sm" data-action="diff" data-note="So phần chữ của hai lần lưu đã chọn.">So hai lần lưu</button></div>{% endif %}
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <h2>Mốc</h2>
+    {% for e in moc %}<div class="cal-row"><div class="cal-date">{{ e.ngay|ngay }}</div><div>{{ e.tieu_de }}</div><span class="chip">{{ e.loai }}</span></div>{% empty %}<p class="empty">Không có mốc sắp tới.</p>{% endfor %}
+  </div>
+  <div class="panel">
+    <h2>Liên quan</h2>
+    {% for c in the_lien_quan %}<div><a href="{% url 'goi_y_the' c.ma %}">{{ c.tieu_de }}</a> <span class="small muted">thẻ {{ c.loai }} · {{ c.trang_thai }}</span></div>{% endfor %}
+    {% for b in bai_lien_quan %}<div>Bài văn phòng: {{ b.tieu_de }} <span class="small muted">{{ b.ngay }}</span>{% if b.canh_bao %} <span class="chip chip-wrap chip-urgent">{{ b.canh_bao }}</span>{% endif %}</div>{% endfor %}
+    {% if not the_lien_quan and not bai_lien_quan %}<p class="empty">Chưa có thẻ hay bài nào gắn với văn bản này.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

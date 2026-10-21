@@ -1,0 +1,35 @@
+{% extends "quantri/base.html" %}
+{% block title %}Đăng nhập · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Đăng nhập hai lớp</h1>
+    <p class="lead">Ba bước của màn hình /dang-nhap, đặt cạnh nhau để xem trước. Khi chạy thật, mỗi bước là một trang.</p>
+  </div>
+</div>
+<div class="login">
+  <form class="panel" data-demo-form novalidate>
+    <span class="eyebrow">Bước 1</span>
+    <h2>Email và mật khẩu</h2>
+    <div class="field"><label for="dn-email">Email</label><input id="dn-email" type="email" autocomplete="username" value="luatsu@vi-du.vn"></div>
+    <div class="field"><label for="dn-mk">Mật khẩu</label><input id="dn-mk" type="password" autocomplete="current-password" value="mat-khau-minh-hoa"></div>
+    <button type="submit" class="btn btn-ink">Tiếp tục</button>
+    <p class="small muted">Sai 5 lần trong 15 phút thì khóa 15 phút và báo qua Telegram. Quên mật khẩu: đặt lại bằng lệnh trên VPS (sổ tay vận hành).</p>
+  </form>
+  <form class="panel" data-demo-form novalidate>
+    <span class="eyebrow">Bước 2</span>
+    <h2>Mã OTP 6 số</h2>
+    <div class="field"><label for="dn-otp">Mã từ ứng dụng xác thực trên điện thoại</label><input id="dn-otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="482913"></div>
+    <button type="submit" class="btn btn-ink">Đăng nhập</button>
+    <p class="small muted">Mất điện thoại: nhập một trong 8 mã dự phòng. Đăng nhập xong vào đúng trang đang mở dở từ link Telegram, Gmail.</p>
+  </form>
+  <div class="panel">
+    <span class="eyebrow">Lần đầu</span>
+    <h2>Bật xác thực hai lớp</h2>
+    <svg viewBox="0 0 21 21" width="120" height="120" role="img" aria-label="Mã QR minh họa" shape-rendering="crispEdges"><rect class="qr-bg" width="21" height="21"/><path class="qr-fg" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0z"/><path class="qr-bg" d="M1 1h5v5H1zM15 1h5v5h-5zM1 15h5v5H1z"/><path class="qr-fg" d="M2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM9 1h2v2H9zM8 4h2v2H8zM11 5h2v2h-2zM9 8h3v1H9zM13 9h2v2h-2zM8 11h2v3H8zM11 12h3v2h-3zM15 13h2v2h-2zM17 16h3v2h-3zM12 16h2v3h-2zM9 17h2v3H9zM15 19h2v2h-2zM18 9h2v2h-2zM1 9h3v2H1zM5 9h2v3H5z"/></svg>
+    <p class="small">Quét mã QR bằng ứng dụng xác thực, nhập mã đầu tiên để bật. Sau đó cất riêng 8 mã dự phòng, mỗi mã dùng một lần:</p>
+    <div class="codes small"><span>7HQ2-M9KD</span><span>4XWP-2R8F</span><span>NB6T-Q3ZL</span><span>9CJE-V7YA</span><span>R2LM-8P4S</span><span>K5DV-W1NX</span><span>3GTF-H6QB</span><span>Y8ZC-5MRE</span></div>
+    <p class="small muted">Mã minh họa, không dùng được.</p>
+  </div>
+</div>
+{% endblock %}

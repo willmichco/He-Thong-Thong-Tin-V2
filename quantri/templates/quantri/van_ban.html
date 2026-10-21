@@ -1,0 +1,101 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}Văn bản · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Văn bản: có gì mới</h1>
+    <p class="lead">2 văn bản nhóm A mới có căn cứ gốc, 1 dự thảo đang lấy ý kiến, {{ review_items|length }} việc cần xem.</p>
+  </div>
+</div>
+
+<nav class="tabs" aria-label="Các phần của màn hình Văn bản">
+  <a class="tab{% if tab == 'tra-cuu' %} is-active{% endif %}" href="{% url 'van_ban' %}">Tra cứu</a>
+  <a class="tab{% if tab == 'lich' %} is-active{% endif %}" href="{% url 'van_ban_lich' %}">Lịch mốc</a>
+  <a class="tab{% if tab == 'can-xem' %} is-active{% endif %}" href="{% url 'van_ban_can_xem' %}">Cần xem ({{ review_items|length }})</a>
+</nav>
+
+{% if tab == "tra-cuu" %}
+<form class="filters" data-filter="rows" data-target="#bang-van-ban" aria-label="Lọc văn bản">
+  <input type="search" name="q" id="loc-vb-q" placeholder="Tìm theo số hiệu hoặc trích yếu, có hoặc không dấu" aria-label="Tìm theo số hiệu hoặc trích yếu">
+  <select name="group" id="loc-vb-nhom" aria-label="Nhóm">
+    <option value="">Nhóm A và B</option><option value="A">Nhóm A</option><option value="B">Nhóm B</option>
+  </select>
+  <select name="label" id="loc-vb-nhan" aria-label="Nhãn">
+    <option value="">Mọi nhãn</option><option value="verified">Có căn cứ gốc</option><option value="unverified">Chưa đủ căn cứ</option>
+  </select>
+</form>
+<div class="panel">
+  <div class="tbl-wrap">
+    <table class="tbl" id="bang-van-ban">
+      <thead><tr><th>Số hiệu</th><th>Trích yếu</th><th>Cơ quan</th><th>Ngày ký</th><th>Hiệu lực</th><th>Tình trạng</th><th>Nhãn</th></tr></thead>
+      <tbody>
+        {% for d in documents %}
+        <tr data-group="{{ d.group_ab }}" data-label="{{ d.basis_label }}" data-text="{{ d.so_hieu|lower }} {{ d.title_summary|lower }}">
+          <td class="nowrap"><a class="mono" href="{% url 'van_ban_chi_tiet' d.id %}">{{ d.so_hieu }}</a></td>
+          <td><a class="doc-title" href="{% url 'van_ban_chi_tiet' d.id %}">{{ d.title_summary }}</a><div class="small muted">{{ d.doc_type }} · nhóm {{ d.group_ab }} · {{ d.fields|join:", " }}</div></td>
+          <td>{{ d.issuer_name }}</td>
+          <td class="nowrap num">{{ d.signed_date|ngay|default:"—" }}</td>
+          <td class="nowrap num">{% if d.effective_date %}{{ d.effective_date|ngay }}{% if d.has_partial_effect %}<div class="small muted">có điều khoản hiệu lực riêng</div>{% endif %}{% elif d.comment_deadline %}Hạn góp ý {{ d.comment_deadline|ngay }}{% else %}<span class="muted">Chưa chốt</span>{% endif %}</td>
+          <td class="nowrap">{{ d.tinh_trang }}</td>
+          <td>{% if d.basis_label == "verified" %}<span class="chip chip-ok">Có căn cứ gốc</span>{% else %}<span class="chip chip-warn">Chưa đủ</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Văn bản nhận dạng bằng cơ quan ban hành và số hiệu, vì số hiệu văn bản địa phương trùng nhau giữa các tỉnh; dự thảo nhận dạng bằng link nguồn.</p>
+</div>
+
+{% elif tab == "lich" %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>60 ngày tới</h2>
+    <div class="actions">
+      <button type="button" class="btn" data-action="add-cal" data-confirm="Thêm mốc nhập tay" data-message="Biểu mẫu: loại (phiên họp, phiên biểu quyết, luật vừa thông qua, khác), ngày, giờ, tiêu đề, link nguồn thuộc quochoi.vn, văn bản liên quan." data-note="Ghi vào calendar_entries (origin = manual), activity_log.">+ Thêm mốc</button>
+      <button type="button" class="btn btn-quiet" data-action="paste-cal" data-note="Dán bảng ngày – giờ – nội dung từ lịch kỳ họp, xem trước rồi mới lưu vào calendar_entries.">Nhập nhiều mốc</button>
+    </div>
+  </div>
+  {% for w in lich %}
+  <div class="week">
+    <div class="eyebrow">{{ w.ten }}</div>
+    {% for e in w.muc %}
+    <div class="cal-row">
+      <div class="cal-date">{{ e.ngay|ngay }}<small>{% if e.gio %}{{ e.gio }} · {% endif %}{{ e.con_ngay|con_lai }}</small></div>
+      <div>{% if e.document_id %}<a href="{% url 'van_ban_chi_tiet' e.document_id %}">{{ e.tieu_de }}</a>{% else %}{{ e.tieu_de }}{% endif %}</div>
+      <div class="actions"><span class="chip{% if e.loai == 'Hiệu lực' %} chip-important{% elif e.loai == 'Hạn góp ý' %} chip-watch{% elif e.origin == 'manual' %} chip-ink{% endif %}">{{ e.loai }}</span>{% if e.origin == "manual" %}<span class="chip">Nhập tay</span>{% endif %}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="panel">
+  <p class="muted">Việc máy không chắc, xếp Khẩn trước, sau đó việc cũ nhất. Mỗi việc đóng bằng "Xong" sau khi đã sửa hoặc thấy đúng, hoặc "Bỏ qua" kèm ghi chú.</p>
+  <div class="rows">
+    {% for r in review_items %}
+    <div class="row" id="{{ r.ma }}">
+      <div class="row-title"><span class="chip chip-wrap{% if r.reason_code == 'SOURCE_DOWN' %} chip-urgent{% else %} chip-warn{% endif %}">{{ r.loai }}</span> <strong>{% if r.document_id %}<a href="{% url 'van_ban_chi_tiet' r.document_id %}">{{ r.doi_tuong }}</a>{% else %}{{ r.doi_tuong }}{% endif %}</strong></div>
+      <span class="small nowrap{% if r.qua_han %} over{% endif %}">chờ {{ r.cho }}</span>
+      <div class="row-meta">
+        {{ r.ly_do }}
+        {% if r.doi_chieu %}
+        <div class="tbl-wrap"><table class="tbl" style="margin-top:8px">
+          <thead><tr><th>Nguồn</th><th>Giá trị</th><th>Đoạn trích</th><th></th></tr></thead>
+          <tbody>{% for nguon, gia_tri, trich in r.doi_chieu %}<tr><td>{{ nguon }}</td><td class="num">{{ gia_tri }}</td><td class="doc-title">"{{ trich }}"</td><td><button type="button" class="btn btn-sm" data-action="pick" data-hide-closest=".row" data-note="Chọn {{ gia_tri }} theo {{ nguon }}. Ngày hiệu lực chuyển Có căn cứ gốc (người xác nhận); giá trị cũ vào activity_log; việc đóng.">Chọn giá trị này</button></td></tr>{% endfor %}</tbody>
+        </table></div>
+        {% endif %}
+        <div class="actions" style="margin-top:8px">
+          <button type="button" class="btn btn-sm" data-action="resolve" data-hide-closest=".row" data-note="Việc đóng. Ghi vào review_items, activity_log.">Xong</button>
+          <button type="button" class="btn btn-sm btn-quiet" data-action="dismiss" data-hide-closest=".row" data-confirm="Bỏ qua việc này" data-message="Nhãn Chưa đủ căn cứ giữ nguyên. Ghi chú vì sao bỏ qua." data-require-note data-note="Việc đóng, giữ nhãn. Ghi vào review_items, activity_log.">Bỏ qua</button>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="empty">Không có việc cần xem.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

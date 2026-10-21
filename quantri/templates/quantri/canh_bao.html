@@ -1,0 +1,44 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}Tin Khẩn {{ a.ma }} · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<a class="back" href="{% url 'hom_nay' %}">← Hôm nay</a>
+<div class="page-head">
+  <div>
+    <span class="chip chip-wrap chip-urgent">Khẩn {{ a.case_code }} · {{ a.ten_loai }}</span>
+    <h1 style="margin-top:8px"><span class="mono">{{ a.van_ban.so_hieu }}</span> – <span class="doc-title">{{ a.van_ban.title_summary }}</span></h1>
+    <p class="lead">Phát hiện {{ a.phat_hien }} · đã gửi Telegram và Gmail · đã nhắc lại {{ a.nhac_lai }} · mã {{ a.ma }}</p>
+  </div>
+</div>
+<div class="grid-2-wide">
+  <div class="panel">
+    <h2>Việc xảy ra</h2>
+    <p>{{ a.su_viec }}</p>
+    <div class="excerpt">"{{ a.can_cu_trich }}"</div>
+    <p class="small muted">Căn cứ: {{ a.van_ban.source }} <span class="chip chip-ok">Có căn cứ gốc</span></p>
+    <h2>Bài của văn phòng bị ảnh hưởng</h2>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Tiêu đề</th><th>Phạm vi viện dẫn</th><th>Link website</th></tr></thead>
+        <tbody>{% for b in a.bai %}<tr><td>{{ b.tieu_de }}</td><td>{{ b.pham_vi }}</td><td class="mono small">{{ b.web_url }}</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-ink" data-action="ack" data-note="Tin chuyển Đã xem, ngừng nhắc lại. Ghi vào alerts, activity_log.">Đã xem</button>
+      <a class="btn" href="{% url 'van_ban_chi_tiet' a.van_ban.id %}">Mở văn bản</a>
+    </div>
+    <p class="small muted">Mở trang này không tự xác nhận; phải bấm Đã xem. Chưa bấm sau 4 giờ thì nhắc một lần qua Telegram; nếu rơi vào 22h–7h thì nhắc lúc 7h00.</p>
+  </div>
+  <div class="panel">
+    <h2>Tin đã gửi qua Telegram</h2>
+    <pre class="tele">🔴 KHẨN – {{ a.case_code }} {{ a.ten_loai }}
+{{ a.van_ban.so_hieu }} – {{ a.van_ban.title_summary|lower }}
+Việc xảy ra: {{ a.su_viec }}
+Bài bị ảnh hưởng: "{{ a.bai.0.tieu_de }}" viện dẫn {{ a.bai.0.pham_vi }}
+Căn cứ: {link Công báo} ✅
+Phát hiện {{ a.phat_hien }}
+👉 Mở và bấm Đã xem: {khu quản trị}/canh-bao/{{ a.ma }}</pre>
+    <p class="small muted">Mẫu Phụ lục B.3. Gmail gửi cùng nội dung, thêm bảng bài bị ảnh hưởng và đoạn trích căn cứ.</p>
+  </div>
+</div>
+{% endblock %}

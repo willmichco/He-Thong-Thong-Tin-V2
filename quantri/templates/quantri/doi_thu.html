@@ -1,0 +1,134 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}Đối thủ · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Đối thủ đang viết gì</h1>
+    <p class="lead">23 bài mới trong 24 giờ từ 9 đơn vị; nhiều nhất về đặt cọc mua đất. 2 chủ đề đối thủ viết nhiều mà văn phòng chưa có bài.</p>
+  </div>
+</div>
+
+<nav class="tabs" aria-label="Các phần của màn hình Đối thủ">
+  <a class="tab{% if tab == 'bai-moi' %} is-active{% endif %}" href="{% url 'doi_thu' %}">Bài mới</a>
+  <a class="tab{% if tab == 'tong-hop' %} is-active{% endif %}" href="{% url 'doi_thu_tong_hop' %}">Tổng hợp</a>
+  <a class="tab{% if tab == 'cau-hoi' %} is-active{% endif %}" href="{% url 'doi_thu_cau_hoi' %}">Kho câu hỏi</a>
+  <a class="tab{% if tab == 'khoang-trong' %} is-active{% endif %}" href="{% url 'doi_thu_khoang_trong' %}">Khoảng trống</a>
+</nav>
+
+{% if tab == "bai-moi" %}
+<form class="filters" data-filter="rows" data-target="#bang-bai-doi-thu" aria-label="Lọc bài đối thủ">
+  <input type="search" name="q" id="loc-bai-q" placeholder="Tìm theo tiêu đề" aria-label="Tìm theo tiêu đề">
+  <select name="unit" id="loc-bai-don-vi" aria-label="Đơn vị">
+    <option value="">Mọi đơn vị</option>
+    {% for dv in don_vi %}<option value="{{ dv }}">{{ dv }}</option>{% endfor %}
+  </select>
+  <select name="kind" id="loc-bai-dang" aria-label="Dạng bài">
+    <option value="">Mọi dạng bài</option>
+    {% for k, v in dang_bai.items %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+  </select>
+  <label class="check" for="loc-bai-tang"><input type="checkbox" name="rising" id="loc-bai-tang"> Đang tăng nhanh</label>
+  <label class="check" for="loc-bai-loi-thoi"><input type="checkbox" name="outdated" id="loc-bai-loi-thoi"> Có thể lỗi thời</label>
+</form>
+<div class="panel">
+  <div class="tbl-wrap">
+    <table class="tbl" id="bang-bai-doi-thu">
+      <thead><tr><th>Đơn vị</th><th>Tiêu đề</th><th>Dạng bài</th><th>Chủ đề</th><th>Ngày đăng</th><th class="r">Lượt xem</th><th class="r">Tăng</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+        {% for a in bai %}
+        <tr data-unit="{{ a.don_vi }}" data-kind="{{ a.dang }}" data-rising="{% if a.tang and a.tang >= 20 and a.luot_xem >= 500 %}1{% endif %}" data-outdated="{% if a.loi_thoi %}1{% endif %}" data-text="{{ a.tieu_de|lower }}">
+          <td class="nowrap">{{ a.don_vi }}</td>
+          <td>{{ a.tieu_de }}{% if a.moi %} <span class="chip chip-ink">Mới</span>{% endif %}
+            {% if a.can_cu %}<details class="trich"><summary>Căn cứ viện dẫn</summary><div class="small">{{ a.can_cu }}</div></details>{% endif %}
+          </td>
+          <td class="nowrap">{{ a.ten_dang }}</td>
+          <td><span class="mono">{{ a.chu_de }}</span><div class="small muted">{{ a.chu_de|ten_chu_de }}</div></td>
+          <td class="nowrap num">{{ a.ngay }}</td>
+          <td class="r">{{ a.luot_xem|so }}</td>
+          <td class="r">{% if a.tang is not None %}{% if a.tang >= 20 %}<strong>+{{ a.tang }}%</strong>{% else %}+{{ a.tang }}%{% endif %}{% else %}—{% endif %}</td>
+          <td>{% if a.loi_thoi %}<span class="chip chip-outdated">Có thể lỗi thời</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Phiếu chỉ lưu siêu dữ liệu: không lưu nội dung bài, hình ảnh hay tác giả. "Tăng" so với lần quét trước cách ít nhất 24 giờ; in đậm khi từ 20% và bài có ít nhất 500 lượt xem. Lượt xem chỉ có khi trang hiển thị.</p>
+</div>
+
+{% elif tab == "tong-hop" %}
+<div class="grid-2-wide">
+  <div class="panel">
+    <div class="panel-head"><h2>Đơn vị × dạng bài, 7 ngày</h2><span class="small muted">số bài</span></div>
+    <div class="tbl-wrap">
+      <table class="tbl heat">
+        <thead><tr><th>Đơn vị</th>{% for c in cot_dang_bai %}<th class="r">{{ c }}</th>{% endfor %}<th class="r">Tổng</th></tr></thead>
+        <tbody>
+          {% for r in tong_hop %}
+          <tr><td class="nowrap">{{ r.don_vi }}</td>{% for v in r.o %}<td class="c" style="--v: {{ v }}"{% if v >= 10 %} data-hi{% endif %}>{{ v }}</td>{% endfor %}<td class="r"><strong>{{ r.tong }}</strong></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">Ô càng đậm, đơn vị càng viết nhiều dạng bài đó. Ví dụ: Đối thủ C tập trung mẫu đơn, Đối thủ G tập trung hỏi đáp và hướng dẫn thủ tục.</p>
+  </div>
+  <div class="panel">
+    <h2>Chủ đề viết nhiều trong 7 ngày</h2>
+    <div class="rows">
+      {% for t in chu_de_nhieu %}
+      <div class="row">
+        <div class="row-title"><span class="mono">{{ t.chu_de }}</span> {{ t.ten }}</div>
+        <span class="small num nowrap">{{ t.so_bai }} bài · {{ t.so_don_vi }} đơn vị</span>
+        <div class="row-meta">{% if t.van_phong_co_bai %}Văn phòng đã có bài{% else %}<span class="over">Văn phòng chưa có bài</span>{% endif %}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <h2>Độ phủ theo đơn vị</h2>
+    <div class="rows">
+      {% for s in nguon_doi_thu %}
+      <div class="row">
+        <div class="row-title">{{ s.name }}</div>
+        <span class="small num nowrap">{% if s.coverage %}{{ s.coverage }}%{% else %}—{% endif %}</span>
+        {% if s.status != "ok" %}<div class="row-meta"><span class="chip chip-warn">{{ trang_thai_nguon|lay:s.status }}</span> {{ s.note }}</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% elif tab == "cau-hoi" %}
+<div class="panel">
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Câu hỏi đã gộp</th><th>Chủ đề</th><th class="r">Số nguồn cùng hỏi</th><th>Căn cứ</th><th>Văn phòng</th><th></th></tr></thead>
+      <tbody>
+        {% for q in cau_hoi %}
+        <tr>
+          <td>{{ q.cau_hoi }}</td>
+          <td><span class="mono">{{ q.chu_de }}</span></td>
+          <td class="r">{{ q.so_nguon }}</td>
+          <td>{% if q.can_cu == "valid" %}<span class="chip chip-ok">{{ tinh_trang_can_cu|lay:q.can_cu }}</span>{% elif q.can_cu == "outdated" %}<span class="chip chip-outdated">{{ tinh_trang_can_cu|lay:q.can_cu }}</span>{% else %}<span class="chip">{{ tinh_trang_can_cu|lay:q.can_cu }}</span>{% endif %}</td>
+          <td>{% if q.da_co_bai %}Đã có bài{% else %}<span class="over">Chưa có bài</span>{% endif %}</td>
+          <td class="nowrap"><button type="button" class="btn btn-quiet btn-sm" data-action="merge" data-note="Gộp hoặc tách câu hỏi; ghi merged_by = user vào questions, question_sources, activity_log.">Gộp, tách</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Câu gần nghĩa gộp bằng code khi độ giống từ 0,85; từ 0,65 đến dưới 0,85 hỏi AI; dưới 0,65 để riêng.</p>
+</div>
+
+{% else %}
+<div class="panel">
+  <p class="muted">Chủ đề và câu hỏi báo chí, đối thủ viết nhiều nhưng kho bài của văn phòng chưa có, xếp theo số nguồn.</p>
+  <div class="rows">
+    {% for k in khoang_trong %}
+    <div class="row">
+      <div class="row-title"><span class="mono">{{ k.chu_de }}</span> {{ k.ten }}</div>
+      <span class="small num nowrap">{{ k.so_nguon }} nguồn</span>
+      <div class="row-meta">{% if k.the %}Đã thành thẻ: <a href="{% url 'goi_y_the' k.the %}">{{ k.the }}</a>{% else %}Chưa thành thẻ (chống lặp hoặc chưa đủ căn cứ){% endif %}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

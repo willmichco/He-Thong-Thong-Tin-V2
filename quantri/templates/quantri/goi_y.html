@@ -1,0 +1,44 @@
+{% extends "quantri/base.html" %}
+{% load quantri_tags %}
+{% block title %}{% if chon %}{{ chon.tieu_de }}{% else %}Gợi ý{% endif %} · Thông tin pháp lý nóng{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Hôm nay nên viết gì</h1>
+    <p class="lead">{{ the_pro|length }} thẻ Chuyên môn, {{ the_pub|length }} thẻ Đại chúng có căn cứ gốc; {{ the_chua_du|length }} thẻ chưa đủ căn cứ không vào bản tin.</p>
+  </div>
+</div>
+
+<form class="filters" data-filter="cards" role="search" aria-label="Lọc thẻ">
+  <input type="search" name="q" id="loc-the-q" placeholder="Tìm theo tiêu đề, từ khóa" aria-label="Tìm theo tiêu đề, từ khóa">
+  <select name="type" id="loc-the-loai" aria-label="Loại thẻ">
+    <option value="">Mọi loại thẻ</option>
+    {% for k, v in loai_the.items %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+  </select>
+  <select name="status" id="loc-the-trang-thai" aria-label="Trạng thái">
+    <option value="">Mọi trạng thái</option>
+    {% for k, v in trang_thai_the.items %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+  </select>
+  <span class="small muted">Ngày: 21/10/2026</span>
+</form>
+
+<div class="goi-y{% if chon %} has-detail{% endif %}">
+  <div class="streams">
+    <section class="stream" aria-label="Luồng Chuyên môn">
+      <div class="stream-head"><h2>Chuyên môn</h2><span class="muted">nhóm A</span></div>
+      {% for c in the_pro %}{% include "quantri/partials/the_rut_gon.html" %}{% endfor %}
+    </section>
+    <section class="stream" aria-label="Luồng Đại chúng">
+      <div class="stream-head"><h2>Đại chúng</h2><span class="muted">nhóm B, Tin tức, Hỏi đáp</span></div>
+      {% for c in the_pub %}{% include "quantri/partials/the_rut_gon.html" %}{% endfor %}
+    </section>
+  </div>
+  {% if chon %}{% include "quantri/partials/the_day_du.html" with c=chon %}{% endif %}
+  <details class="not-ready fold">
+    <summary>Chưa đủ căn cứ ({{ the_chua_du|length }})</summary>
+    <div class="stream">
+      {% for c in the_chua_du %}{% include "quantri/partials/the_rut_gon.html" %}{% endfor %}
+    </div>
+  </details>
+</div>
+{% endblock %}
