@@ -64,11 +64,11 @@ quantri/                  khu quản trị
   templates/quantri/      template, dùng lại khi làm thật
   static/quantri/         app.css, app.js
   management/commands/    xuat_ban_mau: xuất một tệp xem thử
-config/settings.yaml      ngưỡng do văn phòng tự đặt (mục 20)
+config/settings.yaml      ngưỡng tự đặt (mục 20) và con số lấy từ luật (mục 11)
 tests/                    kiểm thử màn hình và bản xuất
 ```
 
-Con số lấy từ luật không đặt trong `config/settings.yaml`; chúng nằm trong bảng cấu hình quy tắc (mục 11), có phiên bản và căn cứ pháp lý.
+Con số lấy từ luật trong `config/settings.yaml` chưa điền giá trị: mỗi con số phải kèm căn cứ, số văn bản hợp nhất và ngày đối chiếu, đối chiếu trong GĐ0 và chốt sau khi Kỳ họp thứ 2 bế mạc.
 
 ## Bước tiếp theo
 

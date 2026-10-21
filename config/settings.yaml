@@ -1,11 +1,13 @@
-# Ngưỡng do văn phòng tự đặt – Đặc tả 3.2, mục 20.
-# Giá trị ban đầu chốt ngày 20/10/2026, bổ sung ngày 21/10/2026; xem lại sau 4 tuần chạy thật.
-# Chỉnh trực tiếp tệp này; màn hình Cấu hình làm sau.
+# Cấu hình của hệ thống – Đặc tả 3.2, mục 11 và mục 20.
+# Tệp nằm trong kho mã nên mọi lần sửa đều có lịch sử. Màn hình Cấu hình làm sau.
 #
-# Con số lấy từ luật (thời hạn, mức phạt, tỷ lệ...) KHÔNG đặt ở đây: chúng nằm trong bảng cấu hình
-# quy tắc (mục 11), có phiên bản và căn cứ pháp lý đi kèm.
+# Phần 1 – ngưỡng do văn phòng tự đặt (mục 20). Giá trị ban đầu chốt ngày 20/10/2026,
+# bổ sung ngày 21/10/2026; xem lại sau 4 tuần chạy thật.
 #
-# Bản mẫu giao diện chưa đọc tệp này; Lát 1 (thu thập) sẽ đọc khi khởi động.
+# Phần 2 – con số lấy từ luật (mục 11), ở cuối tệp. Mỗi con số kèm căn cứ, số văn bản hợp nhất
+# và ngày đối chiếu; luật đổi thì thêm giá trị mới kèm ngày áp dụng, giữ giá trị cũ.
+#
+# Bản mẫu giao diện chưa đọc tệp này; Lát 1 sẽ đọc khi khởi động.
 
 chu_de_tin_tuc:
   het_han_sau_ngay_khong_nhac: 14
@@ -69,3 +71,29 @@ phien_dang_nhap:
 
 ban_tin:
   gio_gui: "06:30"                  # Telegram tóm tắt và Gmail bản đầy đủ
+
+# ---------------------------------------------------------------------------
+# Phần 2 – con số lấy từ luật (mục 11)
+# Chưa điền giá trị: đối chiếu từng điều với văn bản hợp nhất trên nguồn chính thống trong GĐ0,
+# chốt sau khi Kỳ họp thứ 2 bế mạc (dự kiến 21/11/2026, dự phòng 23/11/2026).
+# Căn cứ chung: Luật 64/2025/QH15, được sửa đổi, bổ sung bởi Luật 87/2025/QH15.
+
+moc_nhac_hieu_luc_ngay: [30, 7, 0]  # T-30, T-7, T-0 (mục 11)
+
+quy_tac_luat:
+  hieu_luc:
+    can_cu: "Luật 64/2025/QH15, Điều 53 khoản 1"
+    gia_tri: []                     # mỗi phần tử: {gia_tri, ap_dung_tu, van_ban_hop_nhat, ngay_doi_chieu}
+  tam_ngung_hieu_luc:
+    can_cu: "Luật 64/2025/QH15, Điều 56 khoản 3"
+    gia_tri: []
+  chua_co_van_ban_goc:
+    can_cu: "Luật 64/2025/QH15, Điều 9 (khoản 3 sửa bởi Luật 87/2025/QH15)"
+    gia_tri: []
+
+bo_loc_loai_van_ban:
+  can_cu: "Luật 64/2025/QH15, Điều 4 (sửa bởi Luật 87/2025/QH15)"
+  loai_quy_pham: []                 # điền trong GĐ0 theo văn bản hợp nhất
+  ngoai_le_luon_qua_bo_loc:         # không phải văn bản quy phạm nhưng luôn xử lý (mục 5)
+    - dinh_chinh_van_ban_quy_pham
+    - dinh_chi_tam_ngung_ngung_hieu_luc_van_ban_quy_pham
