@@ -31,7 +31,10 @@
   </aside>
   <div class="work">
     <header class="top">
-      <div class="top-date">{{ thu_hom_nay }}, {{ hom_nay|ngay }}</div>
+      <div class="top-left">
+        <span class="top-date">{{ thu_hom_nay }}, {{ hom_nay|ngay }}</span>
+        <span class="demo-pill" title="Dữ liệu minh họa, không phải văn bản hay bài viết thật. Ngày giả định: Thứ Tư 21/10/2026. Nút thao tác chỉ hiện thông báo, chưa ghi dữ liệu.">Bản mẫu giao diện · dữ liệu minh họa</span>
+      </div>
       <div class="top-actions">
         <button type="button" class="btn btn-ink" data-open="dlg-dan-link">+ Dán link</button>
         <label class="switch" for="vang-mat"><input type="checkbox" id="vang-mat" data-away> Vắng mặt</label>
@@ -39,7 +42,6 @@
         <a href="{% url 'dang_nhap' %}">Đăng xuất</a>
       </div>
     </header>
-    <p class="demo-note">Bản mẫu giao diện: dữ liệu minh họa, không phải văn bản hay bài viết thật. Ngày giả định: Thứ Tư 21/10/2026. Nút thao tác chỉ hiện thông báo, chưa ghi dữ liệu.</p>
     <main id="main" class="page">
 <!--MAIN-START-->
 {% block content %}{% endblock %}

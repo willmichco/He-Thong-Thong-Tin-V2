@@ -4,21 +4,37 @@ Bản mẫu: mọi màn hình đọc dữ liệu minh họa từ demo.py. Nút t
 static/quantri/app.js hiện thông báo nói rõ khi chạy thật thao tác sẽ ghi vào bảng nào.
 """
 
+import re
+from datetime import date
+
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 
 from . import demo
 
 
+def _han_dang(chu):
+    """Đổi "đăng tốt nhất" của thẻ thành nhãn hạn ngắn và mức gấp: (nhãn đầy đủ, nhãn ngắn, mức)."""
+    if "24 giờ" in chu:
+        return "Đăng trong 24 giờ", "24 giờ", "gap"
+    m = re.search(r"(\d{2})/(\d{2})/(\d{4})", chu)
+    if not m:
+        return chu, chu, "nhe"
+    con = (date(int(m[3]), int(m[2]), int(m[1])) - demo.HOM_NAY).days
+    muc = "gap" if con <= 3 else "thuong"
+    return f"Đăng trước {m[1]}/{m[2]} · còn {con} ngày", f"còn {con} ngày", muc
+
+
 def _the_hom_nay(c):
-    """Thẻ kèm lý do ngắn (vì sao viết hôm nay) và tên nền tảng, cho trang Hôm nay."""
+    """Thẻ kèm lý do ngắn (vì sao viết hôm nay), hạn đăng và tên nền tảng, cho trang Hôm nay."""
+    han, han_ngan, han_muc = _han_dang(c["dang_tot_nhat"])
     ly_do = []
     if c["moc"]:
         ly_do.append(f"{c['moc']} (còn {c['moc_con_ngay']} ngày)" if c["moc_con_ngay"] else c["moc"])
     if c["quan_tam"]:
         ly_do.append(c["quan_tam"][0].upper() + c["quan_tam"][1:])
     ly_do.append(f"{c['n_bao']} báo, {c['n_doi_thu']} đối thủ đã viết")
-    return dict(c, ly_do=ly_do, ten_nen_tang=[n for n, _ in c["nen_tang"]])
+    return dict(c, ly_do=ly_do, ten_nen_tang=[n for n, _ in c["nen_tang"]], han=han, han_ngan=han_ngan, han_muc=han_muc)
 
 
 def hom_nay(request):

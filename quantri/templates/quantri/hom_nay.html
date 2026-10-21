@@ -8,9 +8,20 @@
 
   <header class="hn-head">
     <h1>Hôm nay</h1>
-    <p class="hn-summary">
-      {% if alerts %}<b class="hn-sum-urgent">{{ alerts|length }} tin Khẩn</b> cần xem trước, {% endif %}<b>{{ so_goi_y }} bài</b> nên viết, <b>{{ van_ban_moi|length }} văn bản mới</b> cần biết và <b>{{ so_bai_moi }} bài</b> mới của đối thủ trong 24 giờ.
-    </p>
+    <div class="hn-jump" role="group" aria-label="Tóm tắt sáng nay, bấm để tới phần chi tiết">
+      <button type="button" class="hn-jump-item" data-jump="viet">
+        <span class="hn-jump-n">{{ so_goi_y }}</span>
+        <span class="hn-jump-text"><b>bài nên viết</b><small>{{ leads|length }} bài viết trước</small></span>
+      </button>
+      <button type="button" class="hn-jump-item" data-jump="moi">
+        <span class="hn-jump-n">{{ van_ban_moi|length }}</span>
+        <span class="hn-jump-text"><b>văn bản mới</b><small>{{ sap_hieu_luc|length }} mốc trong 30 ngày</small></span>
+      </button>
+      <button type="button" class="hn-jump-item" data-jump="doi-thu">
+        <span class="hn-jump-n">{{ so_bai_moi }}</span>
+        <span class="hn-jump-text"><b>bài đối thủ</b><small>nhiều nhất: {{ chu_de_nhieu.0.ten|lower }}</small></span>
+      </button>
+    </div>
   </header>
 
   {% for a in alerts %}
@@ -27,7 +38,7 @@
   </section>
   {% endfor %}
 
-  <section class="hn-block" aria-labelledby="hn-viet">
+  <section class="hn-block" aria-labelledby="hn-viet" data-anchor="viet">
     <div class="hn-block-head">
       <h2 id="hn-viet">Nên viết hôm nay</h2>
       <a class="hn-link" href="{% url 'goi_y' %}">Tất cả {{ so_goi_y }} gợi ý</a>
@@ -36,17 +47,18 @@
     <div class="hn-leads">
       {% for c in leads %}
       <article class="hn-lead">
-        <p class="hn-lead-eyebrow">
+        <p class="hn-lead-top">
           <span class="hn-stream hn-stream-{{ c.stream }}">{{ c.luong }}</span>
-          <span>viết trước</span>
+          <span class="hn-lead-rank">Viết trước</span>
           <span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span>
         </p>
         <h3 class="hn-lead-title"><a href="{% url 'goi_y_the' c.ma %}">{{ c.tieu_de }}</a></h3>
-        <ul class="hn-why">
+        <ul class="hn-why" aria-label="Vì sao nên viết hôm nay">
           {% for l in c.ly_do %}<li>{{ l }}</li>{% endfor %}
         </ul>
         <dl class="hn-facts">
-          <div><dt>Đăng</dt><dd>{{ c.dang_tot_nhat }}</dd></div>
+          <div><dt>Hạn đăng</dt><dd><span class="hn-han hn-han-{{ c.han_muc }}">{{ c.han }}</span></dd></div>
+          <div><dt>Góc viết</dt><dd>{{ c.angle }}</dd></div>
           <div><dt>Từ khóa</dt><dd>{{ c.seo_primary }}</dd></div>
           <div><dt>Nền tảng</dt><dd>{{ c.ten_nen_tang|join:" · " }}</dd></div>
         </dl>
@@ -70,7 +82,7 @@
               <span class="hn-row-title">{{ c.tieu_de }}</span>
               <span class="hn-meta">{{ c.ly_do.0 }}</span>
             </span>
-            <span class="hn-next-when">{{ c.dang_tot_nhat }}<span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span></span>
+            <span class="hn-next-when"><span class="hn-han hn-han-{{ c.han_muc }}">{{ c.han_ngan }}</span><span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span></span>
           </a>
         </li>
         {% endfor %}
@@ -79,7 +91,7 @@
     {% endif %}
   </section>
 
-  <section class="hn-block" aria-labelledby="hn-moi">
+  <section class="hn-block" aria-labelledby="hn-moi" data-anchor="moi">
     <div class="hn-block-head">
       <h2 id="hn-moi">Có gì mới</h2>
       <a class="hn-link" href="{% url 'van_ban' %}">Tra cứu văn bản</a>
@@ -91,8 +103,8 @@
           {% for d in van_ban_moi %}
           <li>
             <a class="hn-row-title" href="{% url 'van_ban_chi_tiet' d.id %}">{{ d.title_summary }}</a>
-            <span class="hn-meta"><span class="mono">{{ d.so_hieu }}</span> · {{ d.issuer_name }} · hiệu lực {{ d.effective_date|ngay }}</span>
-            <span class="hn-ok">Có căn cứ gốc</span>
+            <span class="hn-meta">{{ d.issuer_name }} · <span class="mono">{{ d.so_hieu }}</span></span>
+            <span class="hn-doc-foot"><span class="hn-ok">Có căn cứ gốc</span><span>Hiệu lực {{ d.effective_date|date:"d/m" }} · {{ d.con_ngay_hieu_luc|con_lai }}</span></span>
           </li>
           {% endfor %}
         </ul>
@@ -115,7 +127,7 @@
     </div>
   </section>
 
-  <section class="hn-block" aria-labelledby="hn-doi-thu">
+  <section class="hn-block" aria-labelledby="hn-doi-thu" data-anchor="doi-thu">
     <div class="hn-block-head">
       <h2 id="hn-doi-thu">Đối thủ viết gì</h2>
       <a class="hn-link" href="{% url 'doi_thu_tong_hop' %}">Tổng hợp 7 ngày</a>

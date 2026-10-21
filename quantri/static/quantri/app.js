@@ -112,6 +112,13 @@
       }
       return;
     }
+    var jump = e.target.closest("[data-jump]");
+    if (jump) {
+      var scope = jump.closest("[data-view]") || document;
+      var to = scope.querySelector('[data-anchor="' + jump.dataset.jump + '"]');
+      if (to) to.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      return;
+    }
     var btn = e.target.closest("button[data-action]");
     if (!btn || btn.disabled) return;
     e.preventDefault();
