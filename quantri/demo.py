@@ -1020,17 +1020,6 @@ AI_7_NGAY = [("15/10", 1.12), ("16/10", 0.84), ("17/10", 2.05), ("18/10", 0.96),
 HAN_MUC_AI = 3.00
 
 
-def ai_7_ngay():
-    """Cột chi phí AI vẽ theo cùng một thang: đường hạn mức 3 USD ở y=14, đáy ở y=80."""
-    top, base, width = 14, 80, 26
-    out = []
-    for i, (n, v) in enumerate(AI_7_NGAY):
-        h = round(v / HAN_MUC_AI * (base - top), 1)
-        x = 8 + i * 39
-        out.append({"ngay": n, "usd": v, "x": x, "y": round(base - h, 1), "h": h, "w": width, "cx": x + width / 2, "ty": round(base - h - 4, 1)})
-    return out
-
-
 DIGEST = {
     "ngay": HOM_NAY,
     "lap_luc": "06:21",

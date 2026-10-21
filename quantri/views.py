@@ -10,37 +10,46 @@ from django.shortcuts import render
 from . import demo
 
 
+def _the_hom_nay(c):
+    """Thẻ kèm lý do ngắn (vì sao viết hôm nay) và tên nền tảng, cho trang Hôm nay."""
+    ly_do = []
+    if c["moc"]:
+        ly_do.append(f"{c['moc']} (còn {c['moc_con_ngay']} ngày)" if c["moc_con_ngay"] else c["moc"])
+    if c["quan_tam"]:
+        ly_do.append(c["quan_tam"][0].upper() + c["quan_tam"][1:])
+    ly_do.append(f"{c['n_bao']} báo, {c['n_doi_thu']} đối thủ đã viết")
+    return dict(c, ly_do=ly_do, ten_nen_tang=[n for n, _ in c["nen_tang"]])
+
+
 def hom_nay(request):
-    the_pro = demo.the_theo_luong("pro")
-    the_pub = demo.the_theo_luong("public")
-    alerts = [a for a in demo.ALERTS if a["status"] != "acknowledged"]
+    the_pro = [_the_hom_nay(c) for c in demo.the_theo_luong("pro")]
+    the_pub = [_the_hom_nay(c) for c in demo.the_theo_luong("public")]
     qua_han = [r for r in demo.REVIEW_ITEMS if r["qua_han"]]
-    bai_moi = [a for a in demo.COMPETITOR_ARTICLES if a["moi"]]
     chu_de_nhieu = demo.CHU_DE_DOI_THU_7_NGAY[:4]
     nhieu_nhat = max(t["so_bai"] for t in chu_de_nhieu)
+    bai_moi = [a for a in demo.COMPETITOR_ARTICLES if a["moi"]]
     return render(request, "quantri/hom_nay.html", {
         "trang": "hom_nay",
-        "alerts": alerts,
-        "qua_han": qua_han,
-        "so_viec_gap": len(alerts) + len(qua_han),
-        # Mỗi luồng: tên, 3 thẻ đầu, tổng số thẻ, số thẻ chưa hiện.
-        "luong": [
-            ("Chuyên môn", the_pro[:3], len(the_pro), max(len(the_pro) - 3, 0)),
-            ("Đại chúng", the_pub[:3], len(the_pub), max(len(the_pub) - 3, 0)),
-        ],
-        "so_pro": len(the_pro),
-        "so_pub": len(the_pub),
+        "alerts": [a for a in demo.ALERTS if a["status"] != "acknowledged"],
+        # Thẻ hạng 1 của mỗi luồng là việc nên viết trước; các thẻ còn lại xếp sau theo luồng và hạng.
+        "leads": [l[0] for l in (the_pro, the_pub) if l],
+        "tiep_theo": the_pro[1:] + the_pub[1:],
+        "so_goi_y": len(the_pro) + len(the_pub),
         "van_ban_moi": [demo.van_ban(i) for i in demo.DIGEST["van_ban_moi_a"]],
         "sap_hieu_luc": [e for e in demo.CALENDAR if e["loai"] in ("Hiệu lực", "Hạn góp ý") and 0 <= e["con_ngay"] <= 30][:4],
         "so_bai_moi": 23,
         "chu_de_nhieu": [dict(t, pct=round(t["so_bai"] / nhieu_nhat * 100)) for t in chu_de_nhieu],
-        "bai_tang": sorted([a for a in bai_moi if a["tang"]], key=lambda a: -a["tang"])[:3],
+        "bai_tang": sorted([a for a in bai_moi if a["tang"]], key=lambda a: -a["tang"])[:4],
         "so_loi_thoi": sum(1 for a in demo.COMPETITOR_ARTICLES if a["loi_thoi"]),
         "review_items": demo.REVIEW_ITEMS,
+        "qua_han": qua_han,
+        "so_chua_qua_han": len(demo.REVIEW_ITEMS) - len(qua_han),
         "nguon_van_de": [s for s in demo.SOURCES if s["status"] != "ok"],
+        "so_nguon": len(demo.SOURCES),
+        "so_nguon_ok": sum(1 for s in demo.SOURCES if s["status"] == "ok"),
         "trang_thai_nguon": demo.TRANG_THAI_NGUON,
-        "ai": demo.ai_7_ngay(),
         "ai_hom_nay": demo.AI_7_NGAY[-1][1],
+        "ai_pct": round(demo.AI_7_NGAY[-1][1] / demo.HAN_MUC_AI * 100),
         "han_muc_ai": demo.HAN_MUC_AI,
         "digest": demo.DIGEST,
         "telegram": demo.tom_tat_telegram(),

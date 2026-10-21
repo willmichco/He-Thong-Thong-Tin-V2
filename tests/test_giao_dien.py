@@ -19,7 +19,7 @@ class ManHinhTest(SimpleTestCase):
 
     def test_noi_dung_chinh(self):
         cases = {
-            "/": ["Cần xử lý trước", "Hôm nay nên viết gì", "Có gì mới", "Đối thủ viết gì", "Tình trạng hệ thống"],
+            "/": ["Nên viết hôm nay", "Có gì mới", "Đối thủ viết gì", "Bản tin sáng nay", "Việc cần xem"],
             "/goi-y/": ["Chuyên môn", "Đại chúng", "Chưa đủ căn cứ"],
             "/doi-thu/tong-hop/": ["Đơn vị × dạng bài, 7 ngày"],
             "/van-ban/can-xem/": ["Hai nguồn Tầng 1 ghi khác nhau"],
@@ -43,10 +43,10 @@ class ManHinhTest(SimpleTestCase):
             if c["card_type"] == "qa":
                 self.assertEqual(c["stream"], "public", c["ma"])
 
-    def test_toa_do_svg_dung_dau_cham(self):
-        # Ngôn ngữ vi định dạng số thực bằng dấu phẩy; tọa độ SVG phải giữ dấu chấm.
+    def test_do_rong_dung_dau_cham(self):
+        # Ngôn ngữ vi định dạng số thực bằng dấu phẩy; độ rộng trong CSS phải giữ dấu chấm.
         html = self.client.get("/").content.decode()
-        self.assertEqual(re.findall(r'\s(?:x|y|width|height)="\d+,\d+"', html), [])
+        self.assertEqual(re.findall(r'width: \d+,\d+%', html), [])
 
     def test_dia_chi_khong_co_tra_ve_404(self):
         self.assertEqual(self.client.get("/goi-y/T-00000000-00/").status_code, 404)
