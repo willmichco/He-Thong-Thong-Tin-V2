@@ -180,8 +180,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding-block: 10px;
   padding-left: max(24px, env(safe-area-inset-left, 0px));
   padding-right: max(24px, env(safe-area-inset-right, 0px));
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
 .top-date { color: var(--muted); font-size: 0.875rem; }
@@ -233,7 +232,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .panel-head .more { font-size: 0.875rem; }
 .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 
-.grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-2-wide { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
 
@@ -273,31 +271,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .st-written, .st-published { color: var(--ok); font-weight: 600; }
 .st-dropped { color: var(--muted); text-decoration: line-through; }
 
-/* Ô số liệu */
-.tiles { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.tile {
-  display: flex; flex-direction: column; gap: 2px;
-  padding: 14px 16px; border-radius: var(--radius);
-  background: var(--surface); border: 1px solid var(--line);
-  color: var(--fg); text-decoration: none;
-}
-.tile:hover { border-color: var(--ink); }
-.tile-label { font-size: 0.8125rem; color: var(--muted); }
-.tile-value { font-size: 1.75rem; font-weight: 650; font-variant-numeric: tabular-nums; line-height: 1.2; }
-.tile-sub { font-size: 0.8125rem; color: var(--muted); }
-.tile-urgent { border-color: color-mix(in srgb, var(--urgent) 45%, var(--line)); }
-.tile-urgent .tile-value { color: var(--urgent); }
 .over { color: var(--urgent); font-weight: 600; }
-
-/* Dải tin Khẩn */
-.urgent-band {
-  display: flex; flex-direction: column; gap: 8px;
-  padding: 12px 16px; border-radius: var(--radius);
-  background: var(--urgent-soft); border: 1px solid color-mix(in srgb, var(--urgent) 40%, transparent);
-}
-.urgent-row { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
-.urgent-row .what { flex: 1 1 320px; min-width: 0; }
-.urgent-row a { color: var(--fg); }
 
 /* Danh sách gọn */
 .rows { display: flex; flex-direction: column; }
@@ -465,10 +439,125 @@ dialog::backdrop { background: rgb(10 10 20 / 45%); }
 .qr-bg { fill: var(--surface); }
 .qr-fg { fill: var(--fg); }
 
+/* ---------- Hôm nay: một luồng đọc từ trên xuống, mỗi khu một kiểu dòng */
+.hn-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 20px; }
+.hn-head .lead { color: var(--muted); margin-top: 4px; }
+.hn-title { color: var(--fg); font-weight: 600; text-decoration: none; }
+a.hn-title:hover { color: var(--ink); text-decoration: underline; }
+.hn-title-sm { color: var(--fg); font-weight: 500; }
+.hn-meta { display: block; margin-top: 2px; font-size: 0.8125rem; color: var(--muted); }
+.hn-sub {
+  margin: 20px 0 4px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--muted);
+}
+.hn-sec-head + .hn-sub, .hn-streams .hn-sub { margin-top: 0; }
+.hn-ok { color: var(--ok); }
+.hn-up { color: var(--ok); font-weight: 600; }
+.hn-warn { color: var(--warn); font-weight: 600; }
+.hn-list, .hn-timeline, .hn-bars, .hn-picks, .hn-todo-list { list-style: none; margin: 0; padding: 0; }
+.hn-list > li, .hn-timeline > li, .hn-bars > li { padding: 10px 0; border-top: 1px solid var(--line); }
+.hn-list > li:first-child, .hn-timeline > li:first-child, .hn-bars > li:first-child { border-top: 0; }
+
+/* Cần xử lý trước */
+.hn-todo {
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--urgent);
+  border-radius: var(--radius); padding: 14px 20px;
+}
+.hn-todo-h { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+.hn-count {
+  min-width: 22px; padding: 0 7px; border-radius: 999px; text-align: center;
+  background: var(--urgent); color: #fff; font-size: 0.75rem; line-height: 22px;
+}
+.hn-todo-item {
+  display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; gap: 4px 16px; align-items: center;
+  padding: 12px 0; border-top: 1px solid var(--line);
+}
+.hn-todo-item:first-child { border-top: 0; padding-bottom: 12px; }
+.hn-todo-list { margin-top: 8px; }
+.hn-tag {
+  justify-self: start; padding: 2px 8px; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+}
+.hn-tag-urgent { background: var(--urgent); color: #fff; }
+.hn-tag-warn { background: var(--warn-soft); color: var(--warn); }
+
+/* Khu trả lời một câu hỏi */
+.hn-sec {
+  min-width: 0; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 20px 24px;
+}
+.hn-sec-head {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 14px; align-items: start;
+  padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--line);
+}
+.hn-sec-head h2 { font-size: 1.125rem; }
+.hn-no {
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--ink-soft); color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.hn-answer { margin-top: 2px; color: var(--muted); }
+.hn-more { font-size: 0.875rem; font-weight: 500; white-space: nowrap; align-self: center; }
+.hn-more::after, .hn-rest::after { content: " →"; }
+.hn-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.8125rem; color: var(--muted); }
+
+/* Gợi ý: hai luồng cạnh nhau, mỗi thẻ một dòng có số thứ tự */
+.hn-streams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 32px; }
+.hn-picks { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.hn-pick {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius);
+  color: var(--fg); text-decoration: none;
+}
+.hn-pick:hover { border-color: var(--ink); }
+.hn-pick:hover .hn-title { color: var(--ink); }
+.hn-pick-main { min-width: 0; }
+.hn-pick .st-proposed { display: none; }
+.hn-rank {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 6px;
+  font-weight: 700; font-size: 0.875rem; font-variant-numeric: tabular-nums;
+}
+.hn-rank-urgent { background: var(--urgent-soft); color: var(--urgent); }
+.hn-rank-important { background: var(--important-soft); color: var(--important); }
+.hn-rank-watch { background: var(--watch-soft); color: var(--watch); }
+.hn-rank-reference { background: var(--reference-soft); color: var(--reference); }
+.hn-lvl-urgent { color: var(--urgent); font-weight: 600; }
+.hn-lvl-important { color: var(--important); font-weight: 600; }
+.hn-lvl-watch { color: var(--watch); font-weight: 600; }
+.hn-lvl-reference { font-weight: 600; }
+.hn-rest { display: inline-block; margin-top: 8px; font-size: 0.875rem; }
+
+/* Có gì mới / Đối thủ viết gì */
+.hn-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.hn-timeline > li { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 12px; align-items: start; }
+.hn-date { display: flex; flex-direction: column; font-variant-numeric: tabular-nums; }
+.hn-date b { font-size: 1rem; }
+.hn-date small { font-size: 0.75rem; color: var(--muted); }
+.hn-bars > li { display: grid; grid-template-columns: minmax(0, 1fr) 30% auto; gap: 4px 12px; align-items: center; }
+.hn-track { height: 8px; border-radius: 4px; background: var(--fill); overflow: hidden; }
+.hn-track > span { display: block; height: 100%; border-radius: 4px; background: var(--ink); }
+.hn-n { font-size: 0.8125rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hn-gap { grid-column: 1 / -1; font-size: 0.8125rem; font-weight: 600; color: var(--urgent); }
+
+/* Tình trạng hệ thống: thu gọn, mở khi cần */
+.hn-health { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.hn-health > summary {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  padding: 14px 20px; cursor: pointer; list-style: none;
+}
+.hn-health > summary::-webkit-details-marker { display: none; }
+.hn-health > summary::before { content: "▸"; color: var(--muted); }
+.hn-health[open] > summary::before { content: "▾"; }
+.hn-health-h { font-weight: 600; }
+.hn-health-sum { font-size: 0.8125rem; color: var(--muted); }
+.hn-health-body {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
+  padding: 4px 20px 20px; border-top: 1px solid var(--line);
+}
+.hn-health-body .hn-sub { margin-top: 16px; }
+
 @media (max-width: 1100px) {
-  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-3 > :last-child { grid-column: 1 / -1; }
-  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hn-pair, .hn-streams { grid-template-columns: minmax(0, 1fr); }
+  .hn-health-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .login { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
@@ -488,8 +577,8 @@ dialog::backdrop { background: rgb(10 10 20 / 45%); }
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
-  .grid-3, .grid-2, .grid-2-wide, .goi-y, .goi-y.has-detail { grid-template-columns: minmax(0, 1fr); }
-  .grid-3 > :last-child { grid-column: auto; }
+  .hn-health-body { grid-template-columns: minmax(0, 1fr); }
+  .grid-2, .grid-2-wide, .goi-y, .goi-y.has-detail { grid-template-columns: minmax(0, 1fr); }
   .goi-y.has-detail .streams, .goi-y.has-detail .not-ready { display: none; }
   .full { position: static; max-height: none; }
   .dl { grid-template-columns: minmax(0, 1fr); gap: 2px 0; }
@@ -499,13 +588,17 @@ dialog::backdrop { background: rgb(10 10 20 / 45%); }
   .toast-wrap { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 }
 @media (max-width: 520px) {
-  .tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
-  .tile { padding: 10px 12px; }
-  .tile-value { font-size: 1.375rem; }
   .user { display: none; }
+  .hn-sec, .hn-todo { padding: 16px; }
+  .hn-sec-head { grid-template-columns: auto minmax(0, 1fr); }
+  .hn-sec-head .hn-more { grid-column: 2; justify-self: start; }
+  .hn-todo-item { grid-template-columns: minmax(0, 1fr) auto; }
+  .hn-todo-item .hn-tag { grid-column: 1 / -1; }
+  .hn-bars > li { grid-template-columns: minmax(0, 1fr) auto; }
+  .hn-track { grid-column: 1 / -1; grid-row: 2; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .card, .tile, .btn { transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .card, .hn-pick, .btn { transition: border-color 0.15s ease, box-shadow 0.15s ease; }
   .toast { animation: rise 0.2s ease-out; }
   @keyframes rise { from { transform: translateY(6px); opacity: 0.4; } to { transform: none; opacity: 1; } }
 }
@@ -571,242 +664,284 @@ dialog::backdrop { background: rgb(10 10 20 / 45%); }
     <main id="main" class="page">
 <section data-view="hom-nay" data-nav="hom_nay" data-title="Hôm nay · Thông tin pháp lý nóng">
 
-<div class="page-head" data-view-title="Hôm nay">
+
+<div class="hn-head">
   <div>
     <h1>Hôm nay</h1>
-    <p class="lead">Bản tin lập lúc 06:21, đã gửi Telegram và Gmail lúc 06:30.</p>
+    <p class="lead">Thứ Tư 21/10/2026 · bản tin lập lúc 06:21, đã gửi Telegram và Gmail lúc 06:30</p>
   </div>
   <a class="btn" href="#ban-tin.2026-10-21">Mở bản tin đầy đủ</a>
 </div>
 
 
-<section class="urgent-band" aria-label="Tin Khẩn chưa xem">
-  
-  <div class="urgent-row">
-    <span class="chip chip-urgent">Khẩn K2</span>
-    <div class="what">
-      <a href="#canh-bao.K-20261020-01"><strong class="mono">3xx/2025/NĐ-CP (minh họa)</strong> – Bị đính chính khoản 2 Điều 9, đăng trên Công báo ngày 20/10/2026.</a>
-      <div class="small muted">Bài bị ảnh hưởng: "Hồ sơ cấp sổ đỏ lần đầu gồm những gì?" viện dẫn khoản 2 Điều 9 · phát hiện 09:40 20/10 · đã nhắc lại 13:40 20/10</div>
-    </div>
-    <button type="button" class="btn btn-sm" data-action="ack" data-hide-closest=".urgent-row" data-note="Tin chuyển Đã xem, ngừng nhắc lại. Ghi vào alerts, activity_log.">Đã xem</button>
-  </div>
-  
+<section class="hn-todo" aria-labelledby="hn-todo-h--hom-nay">
+  <h2 id="hn-todo-h--hom-nay" class="hn-todo-h">Cần xử lý trước <span class="hn-count">2</span></h2>
+  <ul class="hn-todo-list">
+    
+    <li class="hn-todo-item">
+      <span class="hn-tag hn-tag-urgent">Khẩn K2</span>
+      <div class="hn-todo-body">
+        <a class="hn-title" href="#canh-bao.K-20261020-01"><span class="mono">3xx/2025/NĐ-CP (minh họa)</span> – Bị đính chính khoản 2 Điều 9, đăng trên Công báo ngày 20/10/2026.</a>
+        <p class="hn-meta">Ảnh hưởng bài "Hồ sơ cấp sổ đỏ lần đầu gồm những gì?" · phát hiện 09:40 20/10</p>
+      </div>
+      <button type="button" class="btn btn-sm" data-action="ack" data-hide-closest=".hn-todo-item" data-note="Tin chuyển Đã xem, ngừng nhắc lại. Ghi vào alerts, activity_log.">Đã xem</button>
+    </li>
+    
+    
+    <li class="hn-todo-item">
+      <span class="hn-tag hn-tag-warn">Chờ 50 giờ</span>
+      <div class="hn-todo-body">
+        <a class="hn-title" href="#van-ban.can-xem">Số hiệu viện dẫn không tìm thấy: Bài &quot;Thừa kế không có di chúc chia thế nào?&quot;</a>
+        <p class="hn-meta">Bài viện dẫn &quot;Nghị quyết 0x/20yy (minh họa)&quot;, chưa tìm thấy trên vbpl.vn; tin Khẩn K2 cho viện dẫn này chưa chạy được.</p>
+      </div>
+      <a class="btn btn-sm" href="#van-ban.can-xem">Xử lý</a>
+    </li>
+    
+  </ul>
 </section>
 
 
-<section class="tiles" aria-label="Số liệu hôm nay">
-  <a class="tile tile-urgent" href="#canh-bao.K-20261020-01">
-    <span class="tile-label">Khẩn chưa xem</span>
-    <span class="tile-value">1</span>
-    <span class="tile-sub">Tin Khẩn trong 24 giờ</span>
-  </a>
-  <a class="tile" href="#goi-y">
-    <span class="tile-label">Nên viết hôm nay</span>
-    <span class="tile-value">4 <span class="muted">/</span> 2</span>
-    <span class="tile-sub">Chuyên môn / Đại chúng</span>
-  </a>
-  <a class="tile" href="#doi-thu">
-    <span class="tile-label">Bài đối thủ 24 giờ</span>
-    <span class="tile-value">23</span>
-    <span class="tile-sub">Nhiều nhất: đặt cọc mua đất</span>
-  </a>
-  <a class="tile" href="#van-ban.can-xem">
-    <span class="tile-label">Cần xem</span>
-    <span class="tile-value">4</span>
-    <span class="tile-sub"><span class="over">1 quá 48 giờ</span></span>
-  </a>
-</section>
-
-<section class="grid-3" aria-label="Ba câu hỏi">
-  <div class="panel">
-    <div class="panel-head"><h2>Hôm nay nên viết gì</h2><a class="more" href="#goi-y">Xem tất cả</a></div>
-    <div class="sub-head">Chuyên môn</div>
-    <div class="rows">
-      
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-important"></span> <a href="#goi-y.T-20261021-01">Từ 15/11/2026, thủ tục cấp sổ đỏ lần đầu thay đổi thế nào?</a></div>
-        <span class="st st-proposed" data-status-for="T-20261021-01">Đề xuất</span>
-        <div class="row-meta">Đến hạn · Hiệu lực 15/11/2026 (còn 25 ngày)</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-important"></span> <a href="#goi-y.T-20261021-02">Hợp đồng lao động điện tử: 3 điểm mới người lao động cần biết</a></div>
-        <span class="st st-proposed" data-status-for="T-20261021-02">Đề xuất</span>
-        <div class="row-meta">Tin nóng · Hiệu lực 01/12/2026 (còn 41 ngày)</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-watch"></span> <a href="#goi-y.T-20261021-03">Dự thảo mới về hộ kinh doanh: góp ý trước 05/11/2026, những gì sẽ thay đổi?</a></div>
-        <span class="st st-selected" data-status-for="T-20261021-03">Đã chọn</span>
-        <div class="row-meta">Đến hạn · Hạn góp ý 05/11/2026 (còn 15 ngày)</div>
-      </div>
+<section class="hn-sec" aria-labelledby="hn-q1--hom-nay">
+  <header class="hn-sec-head">
+    <span class="hn-no" aria-hidden="true">1</span>
+    <div>
+      <h2 id="hn-q1--hom-nay">Hôm nay nên viết gì</h2>
+      <p class="hn-answer">4 gợi ý Chuyên môn, 2 gợi ý Đại chúng, xếp theo thứ tự nên viết trước.</p>
+    </div>
+    <a class="hn-more" href="#goi-y">Xem tất cả gợi ý</a>
+  </header>
+  <div class="hn-streams">
+    
+    <div>
+      <h3 class="hn-sub">Chuyên môn · 4</h3>
+      <ol class="hn-picks">
+        
+        <li>
+          <a class="hn-pick" href="#goi-y.T-20261021-01">
+            <span class="hn-rank hn-rank-important" title="Mức Quan trọng">1</span>
+            <span class="hn-pick-main">
+              <span class="hn-title">Từ 15/11/2026, thủ tục cấp sổ đỏ lần đầu thay đổi thế nào?</span>
+              <span class="hn-meta"><span class="hn-lvl-important">Quan trọng</span> · Đến hạn · Hiệu lực 15/11/2026 (còn 25 ngày)</span>
+            </span>
+            <span class="st st-proposed" data-status-for="T-20261021-01">Đề xuất</span>
+          </a>
+        </li>
+        
+        <li>
+          <a class="hn-pick" href="#goi-y.T-20261021-02">
+            <span class="hn-rank hn-rank-important" title="Mức Quan trọng">2</span>
+            <span class="hn-pick-main">
+              <span class="hn-title">Hợp đồng lao động điện tử: 3 điểm mới người lao động cần biết</span>
+              <span class="hn-meta"><span class="hn-lvl-important">Quan trọng</span> · Tin nóng · Hiệu lực 01/12/2026 (còn 41 ngày)</span>
+            </span>
+            <span class="st st-proposed" data-status-for="T-20261021-02">Đề xuất</span>
+          </a>
+        </li>
+        
+        <li>
+          <a class="hn-pick" href="#goi-y.T-20261021-03">
+            <span class="hn-rank hn-rank-watch" title="Mức Theo dõi">3</span>
+            <span class="hn-pick-main">
+              <span class="hn-title">Dự thảo mới về hộ kinh doanh: góp ý trước 05/11/2026, những gì sẽ thay đổi?</span>
+              <span class="hn-meta"><span class="hn-lvl-watch">Theo dõi</span> · Đến hạn · Hạn góp ý 05/11/2026 (còn 15 ngày)</span>
+            </span>
+            <span class="st st-selected" data-status-for="T-20261021-03">Đã chọn</span>
+          </a>
+        </li>
+        
+      </ol>
+      <a class="hn-rest" href="#goi-y">và 1 gợi ý nữa</a>
+    </div>
+    
+    <div>
+      <h3 class="hn-sub">Đại chúng · 2</h3>
+      <ol class="hn-picks">
+        
+        <li>
+          <a class="hn-pick" href="#goi-y.T-20261021-05">
+            <span class="hn-rank hn-rank-reference" title="Mức Tham khảo">1</span>
+            <span class="hn-pick-main">
+              <span class="hn-title">Bị bùng cọc khi mua đất: lấy lại tiền cọc thế nào?</span>
+              <span class="hn-meta"><span class="hn-lvl-reference">Tham khảo</span> · Hỏi đáp · 6 nguồn cùng hỏi · bài đối thủ xem nhiều nhất tăng 28% trong 24 giờ</span>
+            </span>
+            <span class="st st-proposed" data-status-for="T-20261021-05">Đề xuất</span>
+          </a>
+        </li>
+        
+        <li>
+          <a class="hn-pick" href="#goi-y.T-20261021-06">
+            <span class="hn-rank hn-rank-reference" title="Mức Tham khảo">2</span>
+            <span class="hn-pick-main">
+              <span class="hn-title">Giả danh cán bộ thuế gọi điện lừa đảo: pháp luật xử lý thế nào?</span>
+              <span class="hn-meta"><span class="hn-lvl-reference">Tham khảo</span> · Tin tức · 3 báo đưa tin trong 24 giờ (minh họa)</span>
+            </span>
+            <span class="st st-proposed" data-status-for="T-20261021-06">Đề xuất</span>
+          </a>
+        </li>
+        
+      </ol>
       
     </div>
-    <div class="sub-head">Đại chúng</div>
-    <div class="rows">
-      
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-reference"></span> <a href="#goi-y.T-20261021-05">Bị bùng cọc khi mua đất: lấy lại tiền cọc thế nào?</a></div>
-        <span class="st st-proposed" data-status-for="T-20261021-05">Đề xuất</span>
-        <div class="row-meta">Hỏi đáp · 6 nguồn cùng hỏi · bài đối thủ xem nhiều nhất tăng 28% trong 24 giờ</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-reference"></span> <a href="#goi-y.T-20261021-06">Giả danh cán bộ thuế gọi điện lừa đảo: pháp luật xử lý thế nào?</a></div>
-        <span class="st st-proposed" data-status-for="T-20261021-06">Đề xuất</span>
-        <div class="row-meta">Tin tức · 3 báo đưa tin trong 24 giờ (minh họa)</div>
-      </div>
-      
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><h2>Có gì mới</h2><a class="more" href="#van-ban">Tra cứu văn bản</a></div>
-    <div class="sub-head">Văn bản mới nhóm A</div>
-    <div class="rows">
-      
-      <div class="row">
-        <div class="row-title"><a href="#van-ban.101"><span class="mono">1xx/2026/NĐ-CP (minh họa)</span> – <span class="doc-title">Quy định chi tiết về đăng ký đất đai, cấp Giấy chứng nhận quyền sử dụng đất lần đầu</span></a></div>
-        <span class="chip chip-ok">Có căn cứ gốc</span>
-        <div class="row-meta">Chính phủ · hiệu lực 15/11/2026 (còn 25 ngày)</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title"><a href="#van-ban.102"><span class="mono">2xx/2026/TT-BNV (minh họa)</span> – <span class="doc-title">Hướng dẫn giao kết hợp đồng lao động bằng phương tiện điện tử</span></a></div>
-        <span class="chip chip-ok">Có căn cứ gốc</span>
-        <div class="row-meta">Bộ Nội vụ · hiệu lực 01/12/2026 (còn 41 ngày)</div>
-      </div>
-      
-    </div>
-    <div class="sub-head">Sắp tới trong 30 ngày</div>
-    <div class="rows">
-      
-      <div class="row">
-        <div class="row-title">Hiệu lực xx/2026/QĐ-UBND (minh họa) theo Công báo TP.HCM — chưa chốt</div>
-        <span class="small num nowrap">01/11/2026</span>
-        <div class="row-meta">Hiệu lực · còn 11 ngày</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Hạn góp ý dự thảo Nghị định về đăng ký hộ kinh doanh</div>
-        <span class="small num nowrap">05/11/2026</span>
-        <div class="row-meta">Hạn góp ý · còn 15 ngày</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Hiệu lực 1xx/2026/NĐ-CP (minh họa) – đăng ký đất đai, cấp Giấy chứng nhận lần đầu</div>
-        <span class="small num nowrap">15/11/2026</span>
-        <div class="row-meta">Hiệu lực · còn 25 ngày</div>
-      </div>
-      
-    </div>
-    <p class="small muted">Nhóm B: 7 văn bản mới, nổi bật: 4xx/2026/TT-BCA (minh họa) – cấp, đổi giấy phép lái xe.</p>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><h2>Đối thủ viết gì</h2><a class="more" href="#doi-thu.tong-hop">Tổng hợp</a></div>
-    <div class="sub-head">Chủ đề viết nhiều trong 7 ngày</div>
-    <div class="rows">
-      
-      <div class="row">
-        <div class="row-title">Chuyển nhượng, đặt cọc mua bán</div>
-        <span class="small num nowrap">9 bài · 4 đơn vị</span>
-        <div class="row-meta">Văn phòng đã có bài</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Cấp sổ lần đầu, cấp đổi</div>
-        <span class="small num nowrap">8 bài · 4 đơn vị</span>
-        <div class="row-meta">Văn phòng đã có bài</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Giao thông (phạt nguội, điểm bằng lái)</div>
-        <span class="small num nowrap">7 bài · 2 đơn vị</span>
-        <div class="row-meta"><span class="over">Văn phòng chưa có bài</span></div>
-      </div>
-      
-    </div>
-    <div class="sub-head">Bài mới nhất</div>
-    <div class="rows">
-      
-      <div class="row">
-        <div class="row-title">Bùng cọc mua đất xử lý thế nào?</div>
-        <span class="small nowrap">Đối thủ A</span>
-        <div class="row-meta">Hỏi đáp · lượt xem tăng 28%</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Thủ tục cấp sổ đỏ lần đầu mới nhất</div>
-        <span class="small nowrap">Đối thủ A</span>
-        <div class="row-meta">Hướng dẫn thủ tục · lượt xem tăng 12%</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Rút BHXH một lần năm 2026 được không?</div>
-        <span class="small nowrap">Đối thủ B</span>
-        <div class="row-meta">Hỏi đáp · lượt xem tăng 35%</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Ly hôn đơn phương cần giấy tờ gì?</div>
-        <span class="small nowrap">Đối thủ B</span>
-        <div class="row-meta">Hỏi đáp · lượt xem tăng 4%</div>
-      </div>
-      
-      <div class="row">
-        <div class="row-title">Mẫu đơn khởi kiện đòi tiền đặt cọc</div>
-        <span class="small nowrap">Đối thủ C</span>
-        <div class="row-meta">Mẫu đơn</div>
-      </div>
-      
-    </div>
+    
   </div>
 </section>
 
-<section class="grid-2-wide">
-  <div class="panel">
-    <div class="panel-head"><h2>Bản tin Telegram lúc 6h30</h2><span class="small muted">✅ Telegram 06:30 · ✅ Gmail 06:30</span></div>
-    <pre class="tele">☀️ Bản tin Thứ Tư, 21/10
-🔴 Khẩn: 1 · Nên viết: 4 chuyên môn, 2 đại chúng
-1. KHẨN K2: 3xx/2025/NĐ-CP (minh họa) – Bị đính chính khoản 2 Điều 9, đăng trên Công báo ngày 20/10/2026.
-2. Từ 15/11/2026, thủ tục cấp sổ đỏ lần đầu thay đổi thế nào?
-🆕 9 văn bản mới · 👀 23 bài đối thủ, nhiều nhất về đặt cọc mua đất · ⏳ 4 cần xem · 1 nguồn lỗi
-👉 {khu quản trị}/ban-tin/2026-10-21</pre>
-    <p class="small muted">Có tin Khẩn chưa xem nên dòng 1 là tin Khẩn (Phụ lục B.2). Bản đầy đủ gửi Gmail: <a href="#ban-tin.2026-10-21">xem</a>.</p>
-  </div>
+<div class="hn-pair">
+  <section class="hn-sec" aria-labelledby="hn-q2--hom-nay">
+    <header class="hn-sec-head">
+      <span class="hn-no" aria-hidden="true">2</span>
+      <div>
+        <h2 id="hn-q2--hom-nay">Có gì mới</h2>
+        <p class="hn-answer">2 văn bản mới cần biết, 3 mốc trong 30 ngày tới.</p>
+      </div>
+    </header>
 
-  <div class="panel">
-    <div class="panel-head"><h2>Tình trạng</h2><a class="more" href="#van-ban.can-xem">Cần xem (4)</a></div>
-    <div class="rows">
+    <h3 class="hn-sub">Văn bản mới</h3>
+    <ul class="hn-list">
       
-      <div class="row">
-        <div class="row-title">Công báo TP.HCM</div>
-        <span class="chip chip-urgent">Lỗi</span>
-        <div class="row-meta">Lỗi 2 lượt liên tiếp từ 08:10: trang trả về trang bảo trì</div>
+      <li>
+        <a class="hn-title" href="#van-ban.101">Quy định chi tiết về đăng ký đất đai, cấp Giấy chứng nhận quyền sử dụng đất lần đầu</a>
+        <p class="hn-meta"><span class="mono">1xx/2026/NĐ-CP (minh họa)</span> · Chính phủ · hiệu lực 15/11/2026 · <span class="hn-ok">✓ có căn cứ gốc</span></p>
+      </li>
+      
+      <li>
+        <a class="hn-title" href="#van-ban.102">Hướng dẫn giao kết hợp đồng lao động bằng phương tiện điện tử</a>
+        <p class="hn-meta"><span class="mono">2xx/2026/TT-BNV (minh họa)</span> · Bộ Nội vụ · hiệu lực 01/12/2026 · <span class="hn-ok">✓ có căn cứ gốc</span></p>
+      </li>
+      
+    </ul>
+
+    <h3 class="hn-sub">Sắp tới</h3>
+    <ul class="hn-timeline">
+      
+      <li>
+        <span class="hn-date"><b>01/11</b><small>còn 11 ngày</small></span>
+        <span><span class="hn-title-sm">Hiệu lực xx/2026/QĐ-UBND (minh họa) theo Công báo TP.HCM — chưa chốt</span><span class="hn-meta">Hiệu lực</span></span>
+      </li>
+      
+      <li>
+        <span class="hn-date"><b>05/11</b><small>còn 15 ngày</small></span>
+        <span><span class="hn-title-sm">Hạn góp ý dự thảo Nghị định về đăng ký hộ kinh doanh</span><span class="hn-meta">Hạn góp ý</span></span>
+      </li>
+      
+      <li>
+        <span class="hn-date"><b>15/11</b><small>còn 25 ngày</small></span>
+        <span><span class="hn-title-sm">Hiệu lực 1xx/2026/NĐ-CP (minh họa) – đăng ký đất đai, cấp Giấy chứng nhận lần đầu</span><span class="hn-meta">Hiệu lực</span></span>
+      </li>
+      
+    </ul>
+
+    <p class="hn-foot">Nhóm B có thêm 7 văn bản mới. <a href="#van-ban">Tra cứu văn bản</a></p>
+  </section>
+
+  <section class="hn-sec" aria-labelledby="hn-q3--hom-nay">
+    <header class="hn-sec-head">
+      <span class="hn-no" aria-hidden="true">3</span>
+      <div>
+        <h2 id="hn-q3--hom-nay">Đối thủ viết gì</h2>
+        <p class="hn-answer">23 bài mới trong 24 giờ, nhiều nhất về chuyển nhượng, đặt cọc mua bán.</p>
       </div>
+    </header>
+
+    <h3 class="hn-sub">Chủ đề viết nhiều · 7 ngày</h3>
+    <ul class="hn-bars">
       
-      <div class="row">
-        <div class="row-title">Đối thủ B</div>
-        <span class="chip chip-warn">Độ phủ thấp</span>
-        <div class="row-meta">Độ phủ 76%: sitemap thiếu bài chuyên mục Hỏi đáp</div>
-      </div>
+      <li>
+        <span class="hn-title-sm">Chuyển nhượng, đặt cọc mua bán</span>
+        <span class="hn-track" aria-hidden="true"><span style="width: 100%"></span></span>
+        <span class="hn-n">9 bài</span>
+        
+      </li>
       
-      <div class="row">
-        <div class="row-title">Đối thủ C</div>
-        <span class="chip chip-warn">Đang dán link tay</span>
-        <div class="row-meta">Đang dán link tay: trang chặn máy đọc từ 19/10 · <button type="button" class="btn btn-quiet btn-sm" data-action="auto" data-confirm="Chuyển nguồn về tự động" data-message="Tắt chế độ dán link tay cho Đối thủ C sau khi đã sửa bộ đọc. Hệ thống chạy thử một lượt ngay." data-note="Ghi vào sources, crawl_runs, activity_log.">Chuyển về tự động</button></div>
-      </div>
+      <li>
+        <span class="hn-title-sm">Cấp sổ lần đầu, cấp đổi</span>
+        <span class="hn-track" aria-hidden="true"><span style="width: 89%"></span></span>
+        <span class="hn-n">8 bài</span>
+        
+      </li>
       
-      <div class="row">
-        <div class="row-title">Đối thủ E</div>
-        <span class="chip chip-warn">Im lặng bất thường</span>
-        <div class="row-meta">Im lặng bất thường: 3 ngày không có bài mới (thường 1 bài/ngày)</div>
-      </div>
+      <li>
+        <span class="hn-title-sm">Giao thông (phạt nguội, điểm bằng lái)</span>
+        <span class="hn-track" aria-hidden="true"><span style="width: 78%"></span></span>
+        <span class="hn-n">7 bài</span>
+        <span class="hn-gap">Văn phòng chưa có bài về chủ đề này</span>
+      </li>
       
+      <li>
+        <span class="hn-title-sm">Ly hôn thuận tình, đơn phương</span>
+        <span class="hn-track" aria-hidden="true"><span style="width: 67%"></span></span>
+        <span class="hn-n">6 bài</span>
+        
+      </li>
+      
+    </ul>
+
+    <h3 class="hn-sub">Bài đang tăng lượt xem</h3>
+    <ul class="hn-list">
+      
+      <li>
+        <span class="hn-title-sm">Phạt nguội xe máy tra cứu ở đâu?</span>
+        <p class="hn-meta">Đối thủ G · Hỏi đáp · <span class="hn-up">+41% lượt xem</span></p>
+      </li>
+      
+      <li>
+        <span class="hn-title-sm">Rút BHXH một lần năm 2026 được không?</span>
+        <p class="hn-meta">Đối thủ B · Hỏi đáp · <span class="hn-up">+35% lượt xem</span></p>
+      </li>
+      
+      <li>
+        <span class="hn-title-sm">Bùng cọc mua đất xử lý thế nào?</span>
+        <p class="hn-meta">Đối thủ A · Hỏi đáp · <span class="hn-up">+28% lượt xem</span></p>
+      </li>
+      
+    </ul>
+
+    <p class="hn-foot">2 bài đối thủ có thể lỗi thời. <a href="#doi-thu">Xem bài mới</a> · <a href="#doi-thu.tong-hop">Tổng hợp</a></p>
+  </section>
+</div>
+
+<details class="hn-health">
+  <summary>
+    <span class="hn-health-h">Tình trạng hệ thống</span>
+    <span class="hn-health-sum">
+      <span class="hn-warn">4 nguồn cần chú ý</span>
+      · 4 việc cần xem · AI hôm nay 0,58/3,00 USD · ✅ Telegram 06:30 · ✅ Gmail 06:30
+    </span>
+  </summary>
+  <div class="hn-health-body">
+    <div>
+      <h3 class="hn-sub">Nguồn</h3>
+      <ul class="hn-list">
+        
+        <li>
+          <span class="hn-title-sm">Công báo TP.HCM</span> <span class="chip chip-urgent">Lỗi</span>
+          <p class="hn-meta">Lỗi 2 lượt liên tiếp từ 08:10: trang trả về trang bảo trì</p>
+          
+        </li>
+        
+        <li>
+          <span class="hn-title-sm">Đối thủ B</span> <span class="chip chip-warn">Độ phủ thấp</span>
+          <p class="hn-meta">Độ phủ 76%: sitemap thiếu bài chuyên mục Hỏi đáp</p>
+          
+        </li>
+        
+        <li>
+          <span class="hn-title-sm">Đối thủ C</span> <span class="chip chip-warn">Đang dán link tay</span>
+          <p class="hn-meta">Đang dán link tay: trang chặn máy đọc từ 19/10</p>
+          <button type="button" class="btn btn-quiet btn-sm" data-action="auto" data-confirm="Chuyển nguồn về tự động" data-message="Tắt chế độ dán link tay cho Đối thủ C sau khi đã sửa bộ đọc. Hệ thống chạy thử một lượt ngay." data-note="Ghi vào sources, crawl_runs, activity_log.">Chuyển về tự động</button>
+        </li>
+        
+        <li>
+          <span class="hn-title-sm">Đối thủ E</span> <span class="chip chip-warn">Im lặng bất thường</span>
+          <p class="hn-meta">Im lặng bất thường: 3 ngày không có bài mới (thường 1 bài/ngày)</p>
+          
+        </li>
+        
+      </ul>
+      <p class="hn-meta"><span class="chip chip-warn">Nhắc</span> Keyword Planner nhập lần cuối 15/09/2026 (36 ngày): <a href="#chu-de.tu-khoa">nhập số liệu từ khóa</a></p>
     </div>
     <div>
-      <div class="sub-head">Chi phí AI 7 ngày (hạn mức 3,00 USD/ngày)</div>
+      <h3 class="hn-sub">Chi phí AI 7 ngày (USD, hạn mức 3,00/ngày)</h3>
       <svg class="bars" viewBox="0 0 280 98" role="img" aria-label="Chi phí AI 7 ngày: cao nhất 2,05 USD ngày 17/10, hôm nay 0,58 USD, hạn mức 3 USD">
         <line class="limit" x1="0" x2="280" y1="14" y2="14"/>
         <text x="278" y="10" text-anchor="end">hạn mức 3,00</text>
@@ -840,11 +975,19 @@ dialog::backdrop { background: rgb(10 10 20 / 45%); }
         <text x="255.0" y="94" text-anchor="middle">21/10*</text>
         
       </svg>
-      <p class="small muted">USD mỗi ngày. * Hôm nay tính đến 08:30.</p>
+      <p class="hn-meta">* Hôm nay tính đến 08:30.</p>
     </div>
-    <p class="small"><span class="chip chip-warn">Nhắc</span> Keyword Planner nhập lần cuối 15/09/2026 (36 ngày): <a href="#chu-de.tu-khoa">nhập số liệu từ khóa</a></p>
+    <div>
+      <h3 class="hn-sub">Bản tin Telegram lúc 6h30</h3>
+      <pre class="tele">☀️ Bản tin Thứ Tư, 21/10
+🔴 Khẩn: 1 · Nên viết: 4 chuyên môn, 2 đại chúng
+1. KHẨN K2: 3xx/2025/NĐ-CP (minh họa) – Bị đính chính khoản 2 Điều 9, đăng trên Công báo ngày 20/10/2026.
+2. Từ 15/11/2026, thủ tục cấp sổ đỏ lần đầu thay đổi thế nào?
+🆕 9 văn bản mới · 👀 23 bài đối thủ, nhiều nhất về đặt cọc mua đất · ⏳ 4 cần xem · 1 nguồn lỗi
+👉 {khu quản trị}/ban-tin/2026-10-21</pre>
+    </div>
   </div>
-</section>
+</details>
 
 </section>
 <section data-view="ban-tin.2026-10-21" data-nav="hom_nay" data-title="Bản tin 21/10/2026 · Thông tin pháp lý nóng" hidden>
