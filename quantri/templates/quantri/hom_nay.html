@@ -2,147 +2,168 @@
 {% load l10n quantri_tags %}
 {% block title %}Hôm nay · Thông tin pháp lý nóng{% endblock %}
 {% block content %}
-<div class="page-head" data-view-title="Hôm nay">
+{# Đọc từ trên xuống theo thứ tự ưu tiên: việc phải xử lý → nên viết gì → có gì mới / đối thủ viết gì → tình trạng hệ thống. #}
+<div class="hn-head">
   <div>
     <h1>Hôm nay</h1>
-    <p class="lead">Bản tin lập lúc {{ digest.lap_luc }}, đã gửi Telegram và Gmail lúc 06:30.</p>
+    <p class="lead">{{ thu_hom_nay }} {{ hom_nay|ngay }} · bản tin lập lúc {{ digest.lap_luc }}, đã gửi Telegram và Gmail lúc 06:30</p>
   </div>
   <a class="btn" href="{% url 'ban_tin' hom_nay|date:'Y-m-d' %}">Mở bản tin đầy đủ</a>
 </div>
 
-{% if alerts %}
-<section class="urgent-band" aria-label="Tin Khẩn chưa xem">
-  {% for a in alerts %}
-  <div class="urgent-row">
-    <span class="chip chip-urgent">Khẩn {{ a.case_code }}</span>
-    <div class="what">
-      <a href="{% url 'canh_bao' a.ma %}"><strong class="mono">{{ a.van_ban.so_hieu }}</strong> – {{ a.su_viec }}</a>
-      <div class="small muted">Bài bị ảnh hưởng: "{{ a.bai.0.tieu_de }}" viện dẫn {{ a.bai.0.pham_vi }} · phát hiện {{ a.phat_hien }} · đã nhắc lại {{ a.nhac_lai }}</div>
-    </div>
-    <button type="button" class="btn btn-sm" data-action="ack" data-hide-closest=".urgent-row" data-note="Tin chuyển Đã xem, ngừng nhắc lại. Ghi vào alerts, activity_log.">Đã xem</button>
-  </div>
-  {% endfor %}
+{% if alerts or qua_han %}
+<section class="hn-todo" aria-labelledby="hn-todo-h">
+  <h2 id="hn-todo-h" class="hn-todo-h">Cần xử lý trước <span class="hn-count">{{ so_viec_gap }}</span></h2>
+  <ul class="hn-todo-list">
+    {% for a in alerts %}
+    <li class="hn-todo-item">
+      <span class="hn-tag hn-tag-urgent">Khẩn {{ a.case_code }}</span>
+      <div class="hn-todo-body">
+        <a class="hn-title" href="{% url 'canh_bao' a.ma %}"><span class="mono">{{ a.van_ban.so_hieu }}</span> – {{ a.su_viec }}</a>
+        <p class="hn-meta">Ảnh hưởng bài "{{ a.bai.0.tieu_de }}" · phát hiện {{ a.phat_hien }}</p>
+      </div>
+      <button type="button" class="btn btn-sm" data-action="ack" data-hide-closest=".hn-todo-item" data-note="Tin chuyển Đã xem, ngừng nhắc lại. Ghi vào alerts, activity_log.">Đã xem</button>
+    </li>
+    {% endfor %}
+    {% for r in qua_han %}
+    <li class="hn-todo-item">
+      <span class="hn-tag hn-tag-warn">Chờ {{ r.cho }}</span>
+      <div class="hn-todo-body">
+        <a class="hn-title" href="{% url 'van_ban_can_xem' %}">{{ r.loai }}: {{ r.doi_tuong }}</a>
+        <p class="hn-meta">{{ r.ly_do }}</p>
+      </div>
+      <a class="btn btn-sm" href="{% url 'van_ban_can_xem' %}">Xử lý</a>
+    </li>
+    {% endfor %}
+  </ul>
 </section>
 {% endif %}
 
-<section class="tiles" aria-label="Số liệu hôm nay">
-  <a class="tile{% if alerts %} tile-urgent{% endif %}" href="{% if alerts %}{% url 'canh_bao' alerts.0.ma %}{% else %}{% url 'hom_nay' %}{% endif %}">
-    <span class="tile-label">Khẩn chưa xem</span>
-    <span class="tile-value">{{ alerts|length }}</span>
-    <span class="tile-sub">Tin Khẩn trong 24 giờ</span>
-  </a>
-  <a class="tile" href="{% url 'goi_y' %}">
-    <span class="tile-label">Nên viết hôm nay</span>
-    <span class="tile-value">{{ so_pro }} <span class="muted">/</span> {{ so_pub }}</span>
-    <span class="tile-sub">Chuyên môn / Đại chúng</span>
-  </a>
-  <a class="tile" href="{% url 'doi_thu' %}">
-    <span class="tile-label">Bài đối thủ 24 giờ</span>
-    <span class="tile-value">{{ so_bai_moi }}</span>
-    <span class="tile-sub">Nhiều nhất: đặt cọc mua đất</span>
-  </a>
-  <a class="tile" href="{% url 'van_ban_can_xem' %}">
-    <span class="tile-label">Cần xem</span>
-    <span class="tile-value">{{ review_items|length }}</span>
-    <span class="tile-sub">{% if so_qua_han %}<span class="over">{{ so_qua_han }} quá 48 giờ</span>{% else %}Không có việc quá hạn{% endif %}</span>
-  </a>
+<section class="hn-sec" aria-labelledby="hn-q1">
+  <header class="hn-sec-head">
+    <span class="hn-no" aria-hidden="true">1</span>
+    <div>
+      <h2 id="hn-q1">Hôm nay nên viết gì</h2>
+      <p class="hn-answer">{{ so_pro }} gợi ý Chuyên môn, {{ so_pub }} gợi ý Đại chúng, xếp theo thứ tự nên viết trước.</p>
+    </div>
+    <a class="hn-more" href="{% url 'goi_y' %}">Xem tất cả gợi ý</a>
+  </header>
+  <div class="hn-streams">
+    {% for ten, cards, tong, con in luong %}
+    <div>
+      <h3 class="hn-sub">{{ ten }} · {{ tong }}</h3>
+      <ol class="hn-picks">
+        {% for c in cards %}
+        <li>
+          <a class="hn-pick" href="{% url 'goi_y_the' c.ma %}">
+            <span class="hn-rank hn-rank-{{ c.muc.lop }}" title="Mức {{ c.muc.ten }}">{{ c.rank_in_stream }}</span>
+            <span class="hn-pick-main">
+              <span class="hn-title">{{ c.tieu_de }}</span>
+              <span class="hn-meta"><span class="hn-lvl-{{ c.muc.lop }}">{{ c.muc.ten }}</span> · {{ c.loai }}{% if c.moc %} · {{ c.moc }} ({{ c.moc_con_ngay|con_lai }}){% elif c.quan_tam %} · {{ c.quan_tam }}{% endif %}</span>
+            </span>
+            <span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ol>
+      {% if con %}<a class="hn-rest" href="{% url 'goi_y' %}">và {{ con }} gợi ý nữa</a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
 </section>
 
-<section class="grid-3" aria-label="Ba câu hỏi">
-  <div class="panel">
-    <div class="panel-head"><h2>Hôm nay nên viết gì</h2><a class="more" href="{% url 'goi_y' %}">Xem tất cả</a></div>
-    <div class="sub-head">Chuyên môn</div>
-    <div class="rows">
-      {% for c in the_pro %}
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-{{ c.muc.lop }}"></span> <a href="{% url 'goi_y_the' c.ma %}">{{ c.tieu_de }}</a></div>
-        <span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span>
-        <div class="row-meta">{{ c.loai }}{% if c.moc %} · {{ c.moc }} ({{ c.moc_con_ngay|con_lai }}){% endif %}</div>
+<div class="hn-pair">
+  <section class="hn-sec" aria-labelledby="hn-q2">
+    <header class="hn-sec-head">
+      <span class="hn-no" aria-hidden="true">2</span>
+      <div>
+        <h2 id="hn-q2">Có gì mới</h2>
+        <p class="hn-answer">{{ van_ban_moi|length }} văn bản mới cần biết, {{ sap_hieu_luc|length }} mốc trong 30 ngày tới.</p>
       </div>
-      {% endfor %}
-    </div>
-    <div class="sub-head">Đại chúng</div>
-    <div class="rows">
-      {% for c in the_pub %}
-      <div class="row">
-        <div class="row-title"><span class="lvl lvl-{{ c.muc.lop }}"></span> <a href="{% url 'goi_y_the' c.ma %}">{{ c.tieu_de }}</a></div>
-        <span class="st st-{{ c.status }}" data-status-for="{{ c.ma }}">{{ c.trang_thai }}</span>
-        <div class="row-meta">{{ c.loai }}{% if c.quan_tam %} · {{ c.quan_tam }}{% endif %}</div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
+    </header>
 
-  <div class="panel">
-    <div class="panel-head"><h2>Có gì mới</h2><a class="more" href="{% url 'van_ban' %}">Tra cứu văn bản</a></div>
-    <div class="sub-head">Văn bản mới nhóm A</div>
-    <div class="rows">
+    <h3 class="hn-sub">Văn bản mới</h3>
+    <ul class="hn-list">
       {% for d in van_ban_moi %}
-      <div class="row">
-        <div class="row-title"><a href="{% url 'van_ban_chi_tiet' d.id %}"><span class="mono">{{ d.so_hieu }}</span> – <span class="doc-title">{{ d.title_summary }}</span></a></div>
-        <span class="chip chip-ok">Có căn cứ gốc</span>
-        <div class="row-meta">{{ d.issuer_name }} · hiệu lực {{ d.effective_date|ngay }} ({{ d.con_ngay_hieu_luc|con_lai }})</div>
-      </div>
+      <li>
+        <a class="hn-title" href="{% url 'van_ban_chi_tiet' d.id %}">{{ d.title_summary }}</a>
+        <p class="hn-meta"><span class="mono">{{ d.so_hieu }}</span> · {{ d.issuer_name }} · hiệu lực {{ d.effective_date|ngay }} · <span class="hn-ok">✓ có căn cứ gốc</span></p>
+      </li>
       {% endfor %}
-    </div>
-    <div class="sub-head">Sắp tới trong 30 ngày</div>
-    <div class="rows">
+    </ul>
+
+    <h3 class="hn-sub">Sắp tới</h3>
+    <ul class="hn-timeline">
       {% for e in sap_hieu_luc %}
-      <div class="row">
-        <div class="row-title">{{ e.tieu_de }}</div>
-        <span class="small num nowrap">{{ e.ngay|ngay }}</span>
-        <div class="row-meta">{{ e.loai }} · {{ e.con_ngay|con_lai }}</div>
-      </div>
+      <li>
+        <span class="hn-date"><b>{{ e.ngay|date:"d/m" }}</b><small>{{ e.con_ngay|con_lai }}</small></span>
+        <span><span class="hn-title-sm">{{ e.tieu_de }}</span><span class="hn-meta">{{ e.loai }}</span></span>
+      </li>
       {% endfor %}
-    </div>
-    <p class="small muted">Nhóm B: {{ digest.van_ban_moi_b.so_luong }} văn bản mới, nổi bật: {{ digest.van_ban_moi_b.noi_bat.0 }}.</p>
-  </div>
+    </ul>
 
-  <div class="panel">
-    <div class="panel-head"><h2>Đối thủ viết gì</h2><a class="more" href="{% url 'doi_thu_tong_hop' %}">Tổng hợp</a></div>
-    <div class="sub-head">Chủ đề viết nhiều trong 7 ngày</div>
-    <div class="rows">
+    <p class="hn-foot">Nhóm B có thêm {{ digest.van_ban_moi_b.so_luong }} văn bản mới. <a href="{% url 'van_ban' %}">Tra cứu văn bản</a></p>
+  </section>
+
+  <section class="hn-sec" aria-labelledby="hn-q3">
+    <header class="hn-sec-head">
+      <span class="hn-no" aria-hidden="true">3</span>
+      <div>
+        <h2 id="hn-q3">Đối thủ viết gì</h2>
+        <p class="hn-answer">{{ so_bai_moi }} bài mới trong 24 giờ, nhiều nhất về {{ chu_de_nhieu.0.ten|lower }}.</p>
+      </div>
+    </header>
+
+    <h3 class="hn-sub">Chủ đề viết nhiều · 7 ngày</h3>
+    <ul class="hn-bars">
       {% for t in chu_de_nhieu %}
-      <div class="row">
-        <div class="row-title">{{ t.ten }}</div>
-        <span class="small num nowrap">{{ t.so_bai }} bài · {{ t.so_don_vi }} đơn vị</span>
-        <div class="row-meta">{% if t.van_phong_co_bai %}Văn phòng đã có bài{% else %}<span class="over">Văn phòng chưa có bài</span>{% endif %}</div>
-      </div>
+      <li>
+        <span class="hn-title-sm">{{ t.ten }}</span>
+        <span class="hn-track" aria-hidden="true"><span style="width: {{ t.pct|unlocalize }}%"></span></span>
+        <span class="hn-n">{{ t.so_bai }} bài</span>
+        {% if not t.van_phong_co_bai %}<span class="hn-gap">Văn phòng chưa có bài về chủ đề này</span>{% endif %}
+      </li>
       {% endfor %}
-    </div>
-    <div class="sub-head">Bài mới nhất</div>
-    <div class="rows">
-      {% for a in bai_moi %}
-      <div class="row">
-        <div class="row-title">{{ a.tieu_de }}</div>
-        <span class="small nowrap">{{ a.don_vi }}</span>
-        <div class="row-meta">{{ a.ten_dang }}{% if a.tang %} · lượt xem tăng {{ a.tang }}%{% endif %}</div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+    </ul>
 
-<section class="grid-2-wide">
-  <div class="panel">
-    <div class="panel-head"><h2>Bản tin Telegram lúc 6h30</h2><span class="small muted">{{ digest.telegram }} · {{ digest.gmail }}</span></div>
-    <pre class="tele">{{ telegram }}</pre>
-    <p class="small muted">Có tin Khẩn chưa xem nên dòng 1 là tin Khẩn (Phụ lục B.2). Bản đầy đủ gửi Gmail: <a href="{% url 'ban_tin' hom_nay|date:'Y-m-d' %}">xem</a>.</p>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><h2>Tình trạng</h2><a class="more" href="{% url 'van_ban_can_xem' %}">Cần xem ({{ review_items|length }})</a></div>
-    <div class="rows">
-      {% for s in nguon_van_de %}
-      <div class="row">
-        <div class="row-title">{{ s.name }}</div>
-        <span class="chip{% if s.status == 'error' %} chip-urgent{% else %} chip-warn{% endif %}">{{ trang_thai_nguon|lay:s.status }}</span>
-        <div class="row-meta">{{ s.note }}{% if s.status == 'manual' %} · <button type="button" class="btn btn-quiet btn-sm" data-action="auto" data-confirm="Chuyển nguồn về tự động" data-message="Tắt chế độ dán link tay cho {{ s.name }} sau khi đã sửa bộ đọc. Hệ thống chạy thử một lượt ngay." data-note="Ghi vào sources, crawl_runs, activity_log.">Chuyển về tự động</button>{% endif %}</div>
-      </div>
+    <h3 class="hn-sub">Bài đang tăng lượt xem</h3>
+    <ul class="hn-list">
+      {% for a in bai_tang %}
+      <li>
+        <span class="hn-title-sm">{{ a.tieu_de }}</span>
+        <p class="hn-meta">{{ a.don_vi }} · {{ a.ten_dang }} · <span class="hn-up">+{{ a.tang }}% lượt xem</span></p>
+      </li>
       {% endfor %}
+    </ul>
+
+    <p class="hn-foot">{{ so_loi_thoi }} bài đối thủ có thể lỗi thời. <a href="{% url 'doi_thu' %}">Xem bài mới</a> · <a href="{% url 'doi_thu_tong_hop' %}">Tổng hợp</a></p>
+  </section>
+</div>
+
+<details class="hn-health">
+  <summary>
+    <span class="hn-health-h">Tình trạng hệ thống</span>
+    <span class="hn-health-sum">
+      {% if nguon_van_de %}<span class="hn-warn">{{ nguon_van_de|length }} nguồn cần chú ý</span>{% else %}Nguồn ổn định{% endif %}
+      · {{ review_items|length }} việc cần xem · AI hôm nay {{ ai_hom_nay|floatformat:2 }}/{{ han_muc_ai|floatformat:2 }} USD · {{ digest.telegram }} · {{ digest.gmail }}
+    </span>
+  </summary>
+  <div class="hn-health-body">
+    <div>
+      <h3 class="hn-sub">Nguồn</h3>
+      <ul class="hn-list">
+        {% for s in nguon_van_de %}
+        <li>
+          <span class="hn-title-sm">{{ s.name }}</span> <span class="chip{% if s.status == 'error' %} chip-urgent{% else %} chip-warn{% endif %}">{{ trang_thai_nguon|lay:s.status }}</span>
+          <p class="hn-meta">{{ s.note }}</p>
+          {% if s.status == 'manual' %}<button type="button" class="btn btn-quiet btn-sm" data-action="auto" data-confirm="Chuyển nguồn về tự động" data-message="Tắt chế độ dán link tay cho {{ s.name }} sau khi đã sửa bộ đọc. Hệ thống chạy thử một lượt ngay." data-note="Ghi vào sources, crawl_runs, activity_log.">Chuyển về tự động</button>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% for n in nhac_tu_khoa %}<p class="hn-meta"><span class="chip chip-warn">Nhắc</span> {{ n.0 }} nhập lần cuối {{ n.1 }} ({{ n.2 }} ngày): <a href="{% url 'chu_de_tu_khoa' %}">nhập số liệu từ khóa</a></p>{% endfor %}
     </div>
     <div>
-      <div class="sub-head">Chi phí AI 7 ngày (hạn mức {{ han_muc_ai|floatformat:2 }} USD/ngày)</div>
+      <h3 class="hn-sub">Chi phí AI 7 ngày (USD, hạn mức {{ han_muc_ai|floatformat:2 }}/ngày)</h3>
       <svg class="bars" viewBox="0 0 280 98" role="img" aria-label="Chi phí AI 7 ngày: cao nhất 2,05 USD ngày 17/10, hôm nay 0,58 USD, hạn mức 3 USD">
         <line class="limit" x1="0" x2="280" y1="14" y2="14"/>
         <text x="278" y="10" text-anchor="end">hạn mức 3,00</text>
@@ -152,9 +173,12 @@
         <text x="{{ x.cx|unlocalize }}" y="94" text-anchor="middle">{{ x.ngay }}{% if forloop.last %}*{% endif %}</text>
         {% endfor %}
       </svg>
-      <p class="small muted">USD mỗi ngày. * Hôm nay tính đến 08:30.</p>
+      <p class="hn-meta">* Hôm nay tính đến 08:30.</p>
     </div>
-    {% for n in nhac_tu_khoa %}<p class="small"><span class="chip chip-warn">Nhắc</span> {{ n.0 }} nhập lần cuối {{ n.1 }} ({{ n.2 }} ngày): <a href="{% url 'chu_de_tu_khoa' %}">nhập số liệu từ khóa</a></p>{% endfor %}
+    <div>
+      <h3 class="hn-sub">Bản tin Telegram lúc 6h30</h3>
+      <pre class="tele">{{ telegram }}</pre>
+    </div>
   </div>
-</section>
+</details>
 {% endblock %}

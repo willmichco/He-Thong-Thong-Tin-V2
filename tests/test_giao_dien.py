@@ -19,7 +19,7 @@ class ManHinhTest(SimpleTestCase):
 
     def test_noi_dung_chinh(self):
         cases = {
-            "/": ["Hôm nay nên viết gì", "Có gì mới", "Đối thủ viết gì", "Bản tin Telegram lúc 6h30"],
+            "/": ["Cần xử lý trước", "Hôm nay nên viết gì", "Có gì mới", "Đối thủ viết gì", "Tình trạng hệ thống"],
             "/goi-y/": ["Chuyên môn", "Đại chúng", "Chưa đủ căn cứ"],
             "/doi-thu/tong-hop/": ["Đơn vị × dạng bài, 7 ngày"],
             "/van-ban/can-xem/": ["Hai nguồn Tầng 1 ghi khác nhau"],
